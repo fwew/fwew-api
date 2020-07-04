@@ -1,3 +1,6 @@
+# Build binary
+fwew-api
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -13,3 +16,6 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# VSCode
+.vscode/
