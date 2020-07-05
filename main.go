@@ -12,6 +12,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// configuration constants
+const (
+	port    string = "80"
+	webRoot string = "http://localhost"
+)
+
+// configured instance of Version
 var version = Version{
 	APIVersion:  "0.0.1",
 	FwewVersion: fmt.Sprintf("%d.%d.%d", fwew.Version.Major, fwew.Version.Minor, fwew.Version.Patch),
@@ -39,19 +46,19 @@ type message struct {
 
 func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: getEndpoints")
-	//TODO: use full URLs on end point values
 	var endpointsJSON = `{
-	"search_url": "/fwew/{nav}",
-	"search_reverse_url": "/fwew/r/{lang}/{local}",
-	"list_url": "/list",
-	"list_filter_url": "/list/{args}",
-	"random_url": "/random/{n}",
-	"random_filter_url": "/random/{n}/{args}",
-	"number_to_navi_url": "/number/r/{num}",
-	"navi_to_number_url": "/number/{word}",
-	"lenition_url": "/lenition",
-	"version_url": "/version"
+	"search_url": "ROOT/fwew/{nav}",
+	"search_reverse_url": "ROOT/fwew/r/{lang}/{local}",
+	"list_url": "ROOT/list",
+	"list_filter_url": "ROOT/list/{args}",
+	"random_url": "ROOT/random/{n}",
+	"random_filter_url": "ROOT/random/{n}/{args}",
+	"number_to_navi_url": "ROOT/number/r/{num}",
+	"navi_to_number_url": "ROOT/number/{word}",
+	"lenition_url": "ROOT/lenition",
+	"version_url": "ROOT/version"
 }`
+	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", webRoot)
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, " ", "")
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "\n", "")
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "\t", "")
@@ -203,7 +210,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/lenition", getLenitionTable)
 	myRouter.HandleFunc("/version", getVersion)
 
-	log.Fatal(http.ListenAndServe(":10000", myRouter))
+	log.Fatal(http.ListenAndServe(":"+port, myRouter))
 }
 
 func main() {
