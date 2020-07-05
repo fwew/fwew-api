@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -12,17 +13,20 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// configuration constants
-const (
-	port    string = "80"
-	webRoot string = "http://localhost"
-)
+// global instance of Config
+var config Config
 
-// configured instance of Version
+// global configured instance of Version
 var version = Version{
 	APIVersion:  "0.0.1",
 	FwewVersion: fmt.Sprintf("%d.%d.%d", fwew.Version.Major, fwew.Version.Minor, fwew.Version.Patch),
 	DictBuild:   fwew.Version.DictBuild,
+}
+
+// Config contains variables to be configured in the config.json file
+type Config struct {
+	Port    string `json:"Port"`
+	WebRoot string `json:"WebRoot"`
 }
 
 // Version contains the API and Fwew version information.
@@ -44,6 +48,19 @@ type message struct {
 	Message string `json:"message"`
 }
 
+// load data from config.json into Config struct
+func loadConfig() {
+	configFile, _ := os.Open("config.json")
+	defer configFile.Close()
+	decoder := json.NewDecoder(configFile)
+	err := decoder.Decode(&config)
+	if err != nil {
+		// fall back to default values
+		config.Port = "8080"
+		config.WebRoot = "https://localhost"
+	}
+}
+
 func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: getEndpoints")
 	var endpointsJSON = `{
@@ -58,7 +75,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"lenition_url": "ROOT/lenition",
 	"version_url": "ROOT/version"
 }`
-	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", webRoot)
+	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, " ", "")
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "\n", "")
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "\t", "")
@@ -71,7 +88,7 @@ func searchWord(w http.ResponseWriter, r *http.Request) {
 	navi := vars["nav"]
 
 	words, err := fwew.TranslateFromNavi(navi)
-	if err != nil {
+	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
 		json.NewEncoder(w).Encode(m)
@@ -88,6 +105,12 @@ func searchWordReverse(w http.ResponseWriter, r *http.Request) {
 	localized := vars["local"]
 
 	words := fwew.TranslateToNavi(localized, languageCode)
+	if len(words) == 0 {
+		var m message
+		m.Message = "no results"
+		json.NewEncoder(w).Encode(m)
+		return
+	}
 
 	json.NewEncoder(w).Encode(words)
 }
@@ -98,7 +121,7 @@ func listWords(w http.ResponseWriter, r *http.Request) {
 	args := strings.Split(vars["args"], " ")
 
 	words, err := fwew.List(args)
-	if err != nil {
+	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
 		json.NewEncoder(w).Encode(m)
@@ -122,7 +145,7 @@ func getRandomWords(w http.ResponseWriter, r *http.Request) {
 	args := strings.Split(vars["args"], " ")
 
 	words, err := fwew.Random(n, args)
-	if err != nil {
+	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
 		json.NewEncoder(w).Encode(m)
@@ -210,10 +233,11 @@ func handleRequests() {
 	myRouter.HandleFunc("/lenition", getLenitionTable)
 	myRouter.HandleFunc("/version", getVersion)
 
-	log.Fatal(http.ListenAndServe(":"+port, myRouter))
+	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
 }
 
 func main() {
+	loadConfig()
 	fwew.AssureDict()
 	handleRequests()
 }
