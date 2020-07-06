@@ -213,6 +213,7 @@ func getVersion(w http.ResponseWriter, r *http.Request) {
 func contentTypeMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		next.ServeHTTP(w, r)
 	})
 }
@@ -221,17 +222,17 @@ func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.Use(contentTypeMiddleware)
 
-	myRouter.HandleFunc("/", getEndpoints)
-	myRouter.HandleFunc("/fwew/r/{lang}/{local}", searchWordReverse)
-	myRouter.HandleFunc("/fwew/{nav}", searchWord)
-	myRouter.HandleFunc("/list", listWords)
-	myRouter.HandleFunc("/list/{args}", listWords)
-	myRouter.HandleFunc("/random/{n}", getRandomWords)
-	myRouter.HandleFunc("/random/{n}/{args}", getRandomWords)
-	myRouter.HandleFunc("/number/r/{num}", searchNumberReverse)
-	myRouter.HandleFunc("/number/{word}", searchNumber)
-	myRouter.HandleFunc("/lenition", getLenitionTable)
-	myRouter.HandleFunc("/version", getVersion)
+	myRouter.HandleFunc("/api/", getEndpoints)
+	myRouter.HandleFunc("/api/fwew/r/{lang}/{local}", searchWordReverse)
+	myRouter.HandleFunc("/api/fwew/{nav}", searchWord)
+	myRouter.HandleFunc("/api/list", listWords)
+	myRouter.HandleFunc("/api/list/{args}", listWords)
+	myRouter.HandleFunc("/api/random/{n}", getRandomWords)
+	myRouter.HandleFunc("/api/random/{n}/{args}", getRandomWords)
+	myRouter.HandleFunc("/api/number/r/{num}", searchNumberReverse)
+	myRouter.HandleFunc("/api/number/{word}", searchNumber)
+	myRouter.HandleFunc("/api/lenition", getLenitionTable)
+	myRouter.HandleFunc("/api/version", getVersion)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
 }
