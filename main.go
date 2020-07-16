@@ -62,7 +62,6 @@ func loadConfig() {
 }
 
 func getEndpoints(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: getEndpoints")
 	var endpointsJSON = `{
 	"search_url": "ROOT/fwew/{nav}",
 	"search_reverse_url": "ROOT/fwew/r/{lang}/{local}",
@@ -83,7 +82,6 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 }
 
 func searchWord(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: searchWord")
 	vars := mux.Vars(r)
 	navi := vars["nav"]
 
@@ -99,7 +97,6 @@ func searchWord(w http.ResponseWriter, r *http.Request) {
 }
 
 func searchWordReverse(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: searchWordReverse")
 	vars := mux.Vars(r)
 	languageCode := vars["lang"]
 	localized := vars["local"]
@@ -116,7 +113,6 @@ func searchWordReverse(w http.ResponseWriter, r *http.Request) {
 }
 
 func listWords(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: listWords")
 	vars := mux.Vars(r)
 	args := strings.Split(vars["args"], " ")
 
@@ -132,7 +128,6 @@ func listWords(w http.ResponseWriter, r *http.Request) {
 }
 
 func getRandomWords(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: getRandomWords")
 	vars := mux.Vars(r)
 	n, err := strconv.Atoi(vars["n"])
 	if err != nil {
@@ -156,7 +151,6 @@ func getRandomWords(w http.ResponseWriter, r *http.Request) {
 }
 
 func searchNumber(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: searchNumber")
 	var n number
 	vars := mux.Vars(r)
 	d, err := fwew.NaviToNumber(vars["word"])
@@ -174,7 +168,6 @@ func searchNumber(w http.ResponseWriter, r *http.Request) {
 }
 
 func searchNumberReverse(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: searchNumberReverse")
 	var n number
 	vars := mux.Vars(r)
 	num, err := strconv.Atoi(vars["num"])
@@ -199,13 +192,11 @@ func searchNumberReverse(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLenitionTable(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: getLenitionTable")
 	lenitionTableJSON := `{"kx":"k","px":"p","tx":"t","k":"h","p":"f","t":"s","ts":"s","'":"(disappears)"}`
 	w.Write([]byte(lenitionTableJSON))
 }
 
 func getVersion(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: getVersion")
 	json.NewEncoder(w).Encode(version)
 }
 
