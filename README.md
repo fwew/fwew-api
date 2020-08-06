@@ -38,19 +38,25 @@ simply run the binary resulting from the install step above.
 
 ## endpoints
 
-here is a quick run-down on the endpoints. in the following,`DOMAIN` is your domain name. (`example.com` or similar)
+here is a quick run-down on the endpoints.
+
+### list the endpoints and syntax
+
+`/`
+
+The root endpoint returns an object containing the endpoints with expected parameters as values.
 
 ### search Na'vi to local
 
-`http://DOMAIN/fwew/{nav}`
+`/fwew/{nav}`
 
 `{nav}` can be any Na'vi word, plain or affixed.
 
-Returns a list of entries.
+Returns an array of Word objects.
 
 ### search local to Na'vi
 
-`http://DOMAIN/fwew/r/{lang}/{local}`
+`/fwew/r/{lang}/{local}`
 
 `{lang}` is any one of the following 2-character language codes:
 
@@ -66,65 +72,65 @@ Returns a list of entries.
 
 `{local}` is any word in the given language, hopefully one that will be found in the dictionary.
 
-Returns a list of entries.
+Returns an array of Word objects.
 
 ### list all words
 
-`http://DOMAIN/list`
+`/list`
 
-Returns the entire list of entries.
+Returns an array containing every Word object in the dictionary.
 
 ### list words with given properties
 
-`http://DOMAIN/list/{args}`
+`/list/{args}`
 
 `{args}` is any "what cond spec" string. spaces and all, as usual.
 see [fwew-lib](https://github.com/fwew/fwew-lib#list) for more info about list syntax.
 
-Returns a list of entries.
+Returns an array of Word objects.
 
 ### random words
 
-`http://DOMAIN/random/{n}`
+`/random/{n}`
 
 `{n}` is any whole number > 0 of random words to retrieve.
 
-Returns a list of entries.
+Returns an array of Word objects.
 
 ### random words with given properties
 
-`http://DOMAIN/random/{n}/{args}`
+`/random/{n}/{args}`
 
 `{n}` is any whole number > 0 of random words to retrieve.
 `{args}` is any "what cond spec" string. spaces and all, same as with /list/.
 see [fwew-lib](https://github.com/fwew/fwew-lib#list) for more info about list syntax.
 
-Returns a list of entries.
+Returns an array of Word objects.
 
 ### number to Na'vi
 
-`http://DOMAIN/number/r/{num}`
+`/number/r/{num}`
 
 `{num}` is any integer between 0 and 32767 inclusive.
 
-Returns a number entry.
+Returns a number entry object.
 
 ### Na'vi to number
 
-`http://DOMAIN/number/{word}`
+`/number/{word}`
 
 `{word}` is any Na'vi number spelled out as a word. For example, `mevolaw`.
 
-Returns a number entry.
+Returns a number entry object.
 
 ### lenition table
 
-`http://DOMAIN/lenition`
+`/lenition`
 
-Returns the lenition entry.
+Returns the lenition object.
 
 ### version
 
-`http://DOMAIN/version`
+`/version`
 
-Returns the version information.
+Returns the version information object.
