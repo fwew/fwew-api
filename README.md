@@ -23,7 +23,7 @@ config.json (defaults):
 
 ```json
 {
-  "Port": "80",
+  "Port": "10000",
   "WebRoot": "http://localhost"
 }
 ```
