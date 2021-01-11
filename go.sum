@@ -4,6 +4,8 @@ github.com/fogleman/gg v1.2.1-0.20190220221249-0403632d5b90/go.mod h1:R/bRT+9gY/
 github.com/fogleman/gg v1.3.0/go.mod h1:R/bRT+9gY/C5z7JzPU0zXsXHKM4/ayA+zqcVNZzPa1k=
 github.com/fwew/fwew-lib/v5 v5.1.2-dev.0.20201221053750-c661ef92da9f h1:S4yeWyfjsjFiU5sfVN0yQirItKOi5P76QD3nV2sMk88=
 github.com/fwew/fwew-lib/v5 v5.1.2-dev.0.20201221053750-c661ef92da9f/go.mod h1:dALuU7if8kRp0+YtYAohr402EhMIvrJb+awq98zNPF0=
+github.com/fwew/fwew-lib/v5 v5.1.2-dev.0.20210111055359-318d2d47e993 h1:uQ8nhZZSxPiUfC2DKQRl852oMFAL1pJsFCfQzUevOLQ=
+github.com/fwew/fwew-lib/v5 v5.1.2-dev.0.20210111055359-318d2d47e993/go.mod h1:dALuU7if8kRp0+YtYAohr402EhMIvrJb+awq98zNPF0=
 github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0/go.mod h1:E/TSTwGwJL78qG/PmXZO1EjYhfJinVAhrmmHX6Z8B9k=
 github.com/gorilla/mux v1.7.4 h1:VuZ8uybHlWmqV03+zRzdwKL4tUnIp1MAQtp1mIFE1bc=
 github.com/gorilla/mux v1.7.4/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
