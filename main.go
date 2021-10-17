@@ -89,6 +89,7 @@ func searchWord(w http.ResponseWriter, r *http.Request) {
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(m)
 		return
 	}
@@ -105,6 +106,7 @@ func searchWordReverse(w http.ResponseWriter, r *http.Request) {
 	if len(words) == 0 {
 		var m message
 		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(m)
 		return
 	}
@@ -120,6 +122,7 @@ func listWords(w http.ResponseWriter, r *http.Request) {
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(m)
 		return
 	}
@@ -133,6 +136,7 @@ func getRandomWords(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		var m message
 		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(m)
 		return
 	}
@@ -143,6 +147,7 @@ func getRandomWords(w http.ResponseWriter, r *http.Request) {
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(m)
 		return
 	}
@@ -157,6 +162,7 @@ func searchNumber(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		var m message
 		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(m)
 		return
 	}
@@ -174,6 +180,7 @@ func searchNumberReverse(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		var m message
 		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidOctalError"), vars["n"])
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(m)
 		return
 	}
@@ -181,6 +188,7 @@ func searchNumberReverse(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		var m message
 		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(m)
 		return
 	}
