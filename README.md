@@ -2,6 +2,8 @@
 
 Fwew REST API
 
+Currently deployed at [tirea.learnnavi.org/api](https://tirea.learnnavi.org/api)
+
 ## install
 
 pre-requisites:
