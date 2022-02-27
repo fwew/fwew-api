@@ -18,7 +18,7 @@ var config Config
 
 // global configured instance of Version
 var version = Version{
-	APIVersion:  "1.1.0",
+	APIVersion:  "1.2.0",
 	FwewVersion: fmt.Sprintf("%d.%d.%d", fwew.Version.Major, fwew.Version.Minor, fwew.Version.Patch),
 	DictBuild:   fwew.Version.DictBuild,
 }
@@ -176,15 +176,15 @@ func searchNumber(w http.ResponseWriter, r *http.Request) {
 func searchNumberReverse(w http.ResponseWriter, r *http.Request) {
 	var n number
 	vars := mux.Vars(r)
-	num, err := strconv.Atoi(vars["num"])
+	num, err := strconv.ParseInt(vars["num"], 0, 0)
 	if err != nil {
 		var m message
-		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidOctalError"), vars["n"])
+		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidIntError"), vars["n"])
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(m)
 		return
 	}
-	word, err := fwew.NumberToNavi(num)
+	word, err := fwew.NumberToNavi(int(num))
 	if err != nil {
 		var m message
 		m.Message = "no results"
