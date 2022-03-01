@@ -6,6 +6,8 @@ github.com/fwew/fwew-lib/v5 v5.1.2-dev.0.20220115014223-16c03355e728 h1:fpTnGsGj
 github.com/fwew/fwew-lib/v5 v5.1.2-dev.0.20220115014223-16c03355e728/go.mod h1:dALuU7if8kRp0+YtYAohr402EhMIvrJb+awq98zNPF0=
 github.com/fwew/fwew-lib/v5 v5.1.2-dev.0.20220228084818-0a1fc59f9b55 h1:XBdQDxe22tH2nWNbFvIgNxnyQXW2Kv34lqapCY7v5Sw=
 github.com/fwew/fwew-lib/v5 v5.1.2-dev.0.20220228084818-0a1fc59f9b55/go.mod h1:dALuU7if8kRp0+YtYAohr402EhMIvrJb+awq98zNPF0=
+github.com/fwew/fwew-lib/v5 v5.1.2-dev.0.20220301015547-33a4fdd6f741 h1:EO4lv26yWEv8AfQpq/cog0FbWSr6XdPujzCQqawv7qI=
+github.com/fwew/fwew-lib/v5 v5.1.2-dev.0.20220301015547-33a4fdd6f741/go.mod h1:dALuU7if8kRp0+YtYAohr402EhMIvrJb+awq98zNPF0=
 github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0/go.mod h1:E/TSTwGwJL78qG/PmXZO1EjYhfJinVAhrmmHX6Z8B9k=
 github.com/gorilla/mux v1.7.4 h1:VuZ8uybHlWmqV03+zRzdwKL4tUnIp1MAQtp1mIFE1bc=
 github.com/gorilla/mux v1.7.4/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
