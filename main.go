@@ -18,7 +18,7 @@ var config Config
 
 // global configured instance of Version
 var version = Version{
-	APIVersion:  "1.2.0",
+	APIVersion:  "1.2.1",
 	FwewVersion: fmt.Sprintf("%d.%d.%d", fwew.Version.Major, fwew.Version.Minor, fwew.Version.Patch),
 	DictBuild:   fwew.Version.DictBuild,
 }
@@ -200,7 +200,7 @@ func searchNumberReverse(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLenitionTable(w http.ResponseWriter, r *http.Request) {
-	lenitionTableJSON := `{"kx":"k","px":"p","tx":"t","k":"h","p":"f","t":"s","ts":"s","'":"(disappears)"}`
+	lenitionTableJSON := `{"kx":"k","px":"p","tx":"t","k":"h","p":"f","t":"s","ts":"s","'":"(disappears, except before ll or rr)"}`
 	w.Write([]byte(lenitionTableJSON))
 }
 
