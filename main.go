@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	fwew "github.com/fwew/fwew-lib/v5"
+	fwew "github.com/fwew/fwew-lib/v6"
 	"github.com/gorilla/mux"
 )
 
