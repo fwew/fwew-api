@@ -24,3 +24,6 @@ fwew-api
 **dictionary.txt
 dictionary-v2.txt
 .idea
+
+#config
+config.json
