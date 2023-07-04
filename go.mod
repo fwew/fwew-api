@@ -3,7 +3,7 @@ module github.com/fwew/fwew-api
 go 1.13
 
 require (
-	github.com/fwew/fwew-lib/v5 v5.7.1-dev.0.20230605232959-b7dd2ec31266
+	github.com/fwew/fwew-lib/v5 v5.7.1-dev.0.20230704190850-db70d4bd3a5e
 	github.com/gorilla/mux v1.7.4
 )
 
