@@ -242,7 +242,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/", getEndpoints)
 	myRouter.HandleFunc("/api/fwew/r/{lang}/{local}", searchWordReverse)
 	myRouter.HandleFunc("/api/fwew/{nav}", searchWord)
-	myRouter.HandleFunc("/api/fwew-simple/{nav}", searchWord)
+	myRouter.HandleFunc("/api/fwew-simple/{nav}", simpleSearchWord)
 	myRouter.HandleFunc("/api/list", listWords)
 	myRouter.HandleFunc("/api/list/{args}", listWords)
 	myRouter.HandleFunc("/api/random/{n}", getRandomWords)
