@@ -64,6 +64,7 @@ func loadConfig() {
 func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	var endpointsJSON = `{
 	"search_url": "ROOT/fwew/{nav}",
+	"simple_search_url": "ROOT/fwew-simple/{nav}",
 	"search_reverse_url": "ROOT/fwew/r/{lang}/{local}",
 	"list_url": "ROOT/list",
 	"list_filter_url": "ROOT/list/{args}",
@@ -85,7 +86,24 @@ func searchWord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	navi := vars["nav"]
 
-	words, err := fwew.TranslateFromNavi(navi)
+	words, err := fwew.TranslateFromNavi(navi, true)
+	if err != nil || len(words) == 0 {
+		var m message
+		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	json.NewEncoder(w).Encode(words)
+}
+
+/* Used with /profanity to make it run faster */
+func simpleSearchWord(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	navi := vars["nav"]
+
+	words, err := fwew.TranslateFromNavi(navi, false)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -224,6 +242,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/", getEndpoints)
 	myRouter.HandleFunc("/api/fwew/r/{lang}/{local}", searchWordReverse)
 	myRouter.HandleFunc("/api/fwew/{nav}", searchWord)
+	myRouter.HandleFunc("/api/fwew-simple/{nav}", searchWord)
 	myRouter.HandleFunc("/api/list", listWords)
 	myRouter.HandleFunc("/api/list/{args}", listWords)
 	myRouter.HandleFunc("/api/random/{n}", getRandomWords)
