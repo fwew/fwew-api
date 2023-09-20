@@ -276,8 +276,8 @@ func main() {
 	loadConfig()
 	fwew.AssureDict()
 	fwew.PhonemeDistros()
-	fmt.Println(fwew.singleNames(1, 0, 0))
+	/*fmt.Println(fwew.singleNames(1, 0, 0))
 	fmt.Println(fwew.fullNames("'itan", 1, 0, [3]int{0, 0, 0}))
-	fmt.Println(fwew.nameAlu(1, 0, 0, 0, 0))
+	fmt.Println(fwew.nameAlu(1, 0, 0, 0, 0))*/
 	handleRequests()
 }
