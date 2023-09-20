@@ -73,7 +73,10 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"number_to_navi_url": "ROOT/number/r/{num}",
 	"navi_to_number_url": "ROOT/number/{word}",
 	"lenition_url": "ROOT/lenition",
-	"version_url": "ROOT/version"
+	"version_url": "ROOT/version",
+	"name_single_url": "ROOT/name/single/{n}/{s}/{dialect}",
+	"name_full_url": "ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}",
+	"name_alu_url": "ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}"
 }`
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, " ", "")
@@ -225,20 +228,109 @@ func getVersion(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(version)
 }
 
-/*func getSingleNames(w http.ResponseWriter, r *http.Request) {
-	lenitionTableJSON := fwew.singleNames(1, 0, 0)
-	w.Write([]byte(lenitionTableJSON))
+func getSingleNames(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	n, err1 := strconv.Atoi(vars["n"])
+	s, err2 := strconv.Atoi(vars["s"])
+	dialect := vars["dialect"]
+	d := 0
+
+	if err1 != nil || err2 != nil {
+		var m message
+		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	if dialect == "forest" {
+		d = 1
+	} else if dialect == "reef" {
+		d = 2
+	}
+
+	names := fwew.SingleNames(n, d, s)
+	json.NewEncoder(w).Encode(names)
 }
 
 func getFullNames(w http.ResponseWriter, r *http.Request) {
-	lenitionTableJSON := fwew.fullNames("'itan", 5, 0, [3]int{0, 0, 0})
-	w.Write([]byte(lenitionTableJSON))
+	vars := mux.Vars(r)
+	ending := vars["ending"]
+	n, err1 := strconv.Atoi(vars["n"])
+	s1, err2 := strconv.Atoi(vars["s1"])
+	s2, err3 := strconv.Atoi(vars["s2"])
+	s3, err4 := strconv.Atoi(vars["s3"])
+	dialect := vars["dialect"]
+	d := 0
+
+	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
+		var m message
+		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	if dialect == "forest" {
+		d = 1
+	} else if dialect == "reef" {
+		d = 2
+	}
+
+	names := fwew.FullNames(ending, n, d, [3]int{s1, s2, s3})
+	json.NewEncoder(w).Encode(names)
 }
 
 func getNameAlu(w http.ResponseWriter, r *http.Request) {
-	lenitionTableJSON := fwew.nameAlu(5, 0, 0, 0, 0)
-	w.Write([]byte(lenitionTableJSON))
-}*/
+	vars := mux.Vars(r)
+	n, err1 := strconv.Atoi(vars["n"])
+	s, err2 := strconv.Atoi(vars["s"])
+	noun_mode := vars["nm"]
+	adj_mode := vars["am"]
+	dialect := vars["dialect"]
+	d := 0
+
+	if err1 != nil || err2 != nil {
+		var m message
+		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	if dialect == "forest" {
+		d = 1
+	} else if dialect == "reef" {
+		d = 2
+	}
+
+	nm := 0
+	if noun_mode == "normal noun" {
+		nm = 1
+	} else if noun_mode == "verb-er" {
+		nm = 2
+	}
+
+	am := 0
+	if adj_mode == "none" {
+		am = 1
+	} else if adj_mode == "any" {
+		am = -1
+	} else if adj_mode == "genitive noun" {
+		am = 3
+	} else if adj_mode == "origin noun" {
+		am = 4
+	} else if adj_mode == "participle verb" {
+		am = 5
+	} else if adj_mode == "active participle verb" {
+		am = 6
+	} else if adj_mode == "passive participle verb" {
+		am = 7
+	}
+
+	names := fwew.NameAlu(n, d, s, nm, am)
+	json.NewEncoder(w).Encode(names)
+}
 
 // set the Header Content-Type to "application/json" for all endpoints
 func contentTypeMiddleware(next http.Handler) http.Handler {
@@ -265,9 +357,9 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/number/{word}", searchNumber)
 	myRouter.HandleFunc("/api/lenition", getLenitionTable)
 	myRouter.HandleFunc("/api/version", getVersion)
-	//myRouter.HandleFunc("/name/single", getSingleNames)
-	//myRouter.HandleFunc("/name/full", getFullNames)
-	//myRouter.HandleFunc("/name/alu", getNameAlu)
+	myRouter.HandleFunc("/api/name/single/{n}/{s}/{dialect}", getSingleNames)
+	myRouter.HandleFunc("/api/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}", getFullNames)
+	myRouter.HandleFunc("/api/name/alu/{n}/{s}/{nm}/{am}/{dialect}", getNameAlu)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
 }
@@ -276,8 +368,5 @@ func main() {
 	loadConfig()
 	fwew.AssureDict()
 	fwew.PhonemeDistros()
-	/*fmt.Println(fwew.singleNames(1, 0, 0))
-	fmt.Println(fwew.fullNames("'itan", 1, 0, [3]int{0, 0, 0}))
-	fmt.Println(fwew.nameAlu(1, 0, 0, 0, 0))*/
 	handleRequests()
 }
