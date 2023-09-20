@@ -160,7 +160,6 @@ func getRandomWords(w http.ResponseWriter, r *http.Request) {
 	}
 
 	args := strings.Split(vars["args"], " ")
-
 	words, err := fwew.Random(n, args)
 	if err != nil || len(words) == 0 {
 		var m message
@@ -226,6 +225,21 @@ func getVersion(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(version)
 }
 
+/*func getSingleNames(w http.ResponseWriter, r *http.Request) {
+	lenitionTableJSON := fwew.singleNames(1, 0, 0)
+	w.Write([]byte(lenitionTableJSON))
+}
+
+func getFullNames(w http.ResponseWriter, r *http.Request) {
+	lenitionTableJSON := fwew.fullNames("'itan", 5, 0, [3]int{0, 0, 0})
+	w.Write([]byte(lenitionTableJSON))
+}
+
+func getNameAlu(w http.ResponseWriter, r *http.Request) {
+	lenitionTableJSON := fwew.nameAlu(5, 0, 0, 0, 0)
+	w.Write([]byte(lenitionTableJSON))
+}*/
+
 // set the Header Content-Type to "application/json" for all endpoints
 func contentTypeMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -251,6 +265,9 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/number/{word}", searchNumber)
 	myRouter.HandleFunc("/api/lenition", getLenitionTable)
 	myRouter.HandleFunc("/api/version", getVersion)
+	//myRouter.HandleFunc("/name/single", getSingleNames)
+	//myRouter.HandleFunc("/name/full", getFullNames)
+	//myRouter.HandleFunc("/name/alu", getNameAlu)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
 }
@@ -258,5 +275,9 @@ func handleRequests() {
 func main() {
 	loadConfig()
 	fwew.AssureDict()
+	fwew.PhonemeDistros()
+	fmt.Println(fwew.singleNames(1, 0, 0))
+	fmt.Println(fwew.fullNames("'itan", 1, 0, [3]int{0, 0, 0}))
+	fmt.Println(fwew.nameAlu(1, 0, 0, 0, 0))
 	handleRequests()
 }
