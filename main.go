@@ -277,7 +277,7 @@ func getFullNames(w http.ResponseWriter, r *http.Request) {
 		d = 2
 	}
 
-	names := fwew.FullNames(ending, n, d, [3]int{s1, s2, s3})
+	names := fwew.FullNames(ending, n, d, [3]int{s1, s2, s3}, true)
 	json.NewEncoder(w).Encode(names)
 }
 
@@ -316,6 +316,8 @@ func getNameAlu(w http.ResponseWriter, r *http.Request) {
 		am = 1
 	} else if adj_mode == "any" {
 		am = -1
+	} else if adj_mode == "normal adjective" {
+		am = 2
 	} else if adj_mode == "genitive noun" {
 		am = 3
 	} else if adj_mode == "origin noun" {
