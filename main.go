@@ -335,7 +335,7 @@ func getNameAlu(w http.ResponseWriter, r *http.Request) {
 }
 
 func getPhonemeDistros(w http.ResponseWriter, r *http.Request) {
-	a := fwew.getPhonemeDistrosMap()
+	a := fwew.GetPhonemeDistrosMap()
 	json.NewEncoder(w).Encode(a)
 }
 
