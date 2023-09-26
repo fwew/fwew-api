@@ -374,7 +374,6 @@ func handleRequests() {
 
 func main() {
 	loadConfig()
-	fwew.AssureDict()
-	fwew.PhonemeDistros()
+	fwew.StartEverything()
 	handleRequests()
 }
