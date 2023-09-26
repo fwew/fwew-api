@@ -89,7 +89,7 @@ func searchWord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	navi := vars["nav"]
 
-	words, err := fwew.TranslateFromNaviHash(navi, true)
+	words, err := fwew.TranslateFromNavi(navi, true)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -106,7 +106,7 @@ func simpleSearchWord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	navi := vars["nav"]
 
-	words, err := fwew.TranslateFromNaviHash(navi, false)
+	words, err := fwew.TranslateFromNavi(navi, false)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -123,7 +123,7 @@ func searchWordReverse(w http.ResponseWriter, r *http.Request) {
 	languageCode := vars["lang"]
 	localized := vars["local"]
 
-	words := fwew.TranslateToNaviHash(localized, languageCode)
+	words := fwew.TranslateToNavi(localized, languageCode)
 	if len(words) == 0 {
 		var m message
 		m.Message = "no results"
