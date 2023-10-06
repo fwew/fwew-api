@@ -339,6 +339,11 @@ func getPhonemeDistros(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(a)
 }
 
+func getMultiwordWords(w http.ResponseWriter, r *http.Request) {
+	a := fwew.GetMultiwordWords()
+	json.NewEncoder(w).Encode(a)
+}
+
 // set the Header Content-Type to "application/json" for all endpoints
 func contentTypeMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -368,6 +373,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}", getFullNames)
 	myRouter.HandleFunc("/api/name/alu/{n}/{s}/{nm}/{am}/{dialect}", getNameAlu)
 	myRouter.HandleFunc("/api/phonemedistros", getPhonemeDistros)
+	myRouter.HandleFunc("/api/multiwordwords", getMultiwordWords)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
 }
