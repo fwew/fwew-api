@@ -64,8 +64,10 @@ func loadConfig() {
 func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	var endpointsJSON = `{
 	"search_url": "ROOT/fwew/{nav}",
-	"simple_search_url": "ROOT/fwew-simple/{nav}",
 	"search_reverse_url": "ROOT/fwew/r/{lang}/{local}",
+	"search_url_1d_array": "ROOT/fwew/{nav}",
+	"search_reverse_url_1d_array": "ROOT/fwew/r/{lang}/{local}",
+	"simple_search_url": "ROOT/fwew-simple/{nav}",
 	"list_url": "ROOT/list",
 	"list_filter_url": "ROOT/list/{args}",
 	"random_url": "ROOT/random/{n}",
@@ -101,13 +103,13 @@ func searchWord(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(words)
 }
 
-/* Used with /profanity to make it run faster */
-func simpleSearchWord(w http.ResponseWriter, r *http.Request) {
+func searchWordReverse(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	navi := vars["nav"]
+	languageCode := vars["lang"]
+	localized := vars["local"]
 
-	words, err := fwew.TranslateFromNaviHash(navi, false)
-	if err != nil || len(words) == 0 {
+	words := fwew.TranslateToNaviHash(localized, languageCode)
+	if len(words) == 0 {
 		var m message
 		m.Message = "no results"
 		w.WriteHeader(http.StatusBadRequest)
@@ -118,13 +120,60 @@ func simpleSearchWord(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(words)
 }
 
-func searchWordReverse(w http.ResponseWriter, r *http.Request) {
+func searchWord1d(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	navi := vars["nav"]
+
+	words, err := fwew.TranslateFromNaviHash(navi, true)
+	if err != nil || len(words) == 0 {
+		var m message
+		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	oneDWords := []fwew.Word{}
+	for _, a := range words {
+		for _, b := range a {
+			oneDWords = append(oneDWords, b)
+		}
+	}
+
+	json.NewEncoder(w).Encode(oneDWords)
+}
+
+func searchWordReverse1d(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	languageCode := vars["lang"]
 	localized := vars["local"]
 
 	words := fwew.TranslateToNaviHash(localized, languageCode)
 	if len(words) == 0 {
+		var m message
+		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	oneDWords := []fwew.Word{}
+	for _, a := range words {
+		for _, b := range a {
+			oneDWords = append(oneDWords, b)
+		}
+	}
+
+	json.NewEncoder(w).Encode(oneDWords)
+}
+
+/* Used with /profanity to make it run faster */
+func simpleSearchWord(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	navi := vars["nav"]
+
+	words, err := fwew.TranslateFromNaviHash(navi, false)
+	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
 		w.WriteHeader(http.StatusBadRequest)
@@ -360,6 +409,8 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/", getEndpoints)
 	myRouter.HandleFunc("/api/fwew/r/{lang}/{local}", searchWordReverse)
 	myRouter.HandleFunc("/api/fwew/{nav}", searchWord)
+	myRouter.HandleFunc("/api/fwew-1d/r/{lang}/{local}", searchWordReverse1d)
+	myRouter.HandleFunc("/api/fwew-1d/{nav}", searchWord1d)
 	myRouter.HandleFunc("/api/fwew-simple/{nav}", simpleSearchWord)
 	myRouter.HandleFunc("/api/list", listWords)
 	myRouter.HandleFunc("/api/list/{args}", listWords)
