@@ -64,8 +64,11 @@ func loadConfig() {
 func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	var endpointsJSON = `{
 	"search_url": "ROOT/fwew/{nav}",
-	"simple_search_url": "ROOT/fwew-simple/{nav}",
 	"search_reverse_url": "ROOT/fwew/r/{lang}/{local}",
+	"search_url_1d_array": "ROOT/fwew/{nav}",
+	"search_reverse_url_1d_array": "ROOT/fwew/r/{lang}/{local}",
+	"search_complete": "ROOT/search/{lang}/{words}}",
+	"simple_search_url": "ROOT/fwew-simple/{nav}",
 	"list_url": "ROOT/list",
 	"list_filter_url": "ROOT/list/{args}",
 	"random_url": "ROOT/random/{n}",
@@ -101,6 +104,70 @@ func searchWord(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(words)
 }
 
+func searchWordReverse(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	languageCode := vars["lang"]
+	localized := vars["local"]
+
+	words := fwew.TranslateToNaviHash(localized, languageCode)
+	if len(words) == 0 {
+		var m message
+		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	json.NewEncoder(w).Encode(words)
+}
+
+func searchWord1d(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	navi := vars["nav"]
+
+	words, err := fwew.TranslateFromNaviHash(navi, true)
+	if err != nil || len(words) == 0 {
+		var m message
+		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	oneDWords := []fwew.Word{}
+	for _, a := range words {
+		for _, b := range a {
+			oneDWords = append(oneDWords, b)
+		}
+	}
+
+	json.NewEncoder(w).Encode(oneDWords)
+}
+
+func searchWordReverse1d(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	languageCode := vars["lang"]
+	localized := vars["local"]
+
+	words := fwew.TranslateToNaviHash(localized, languageCode)
+	if len(words) == 0 {
+		var m message
+		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	oneDWords := []fwew.Word{}
+	for _, a := range words {
+		for _, b := range a {
+			oneDWords = append(oneDWords, b)
+		}
+	}
+
+	json.NewEncoder(w).Encode(oneDWords)
+}
+
 /* Used with /profanity to make it run faster */
 func simpleSearchWord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -118,13 +185,14 @@ func simpleSearchWord(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(words)
 }
 
-func searchWordReverse(w http.ResponseWriter, r *http.Request) {
+func searchBidirectional(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	languageCode := vars["lang"]
-	localized := vars["local"]
+	inputWords := vars["words"]
 
-	words := fwew.TranslateToNavi(localized, languageCode)
-	if len(words) == 0 {
+	words, err := fwew.BidirectionalSearch(inputWords, true, languageCode)
+	if err != nil || len(words) == 0 {
+
 		var m message
 		m.Message = "no results"
 		w.WriteHeader(http.StatusBadRequest)
@@ -339,6 +407,11 @@ func getPhonemeDistros(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(a)
 }
 
+func getMultiwordWords(w http.ResponseWriter, r *http.Request) {
+	a := fwew.GetMultiwordWords()
+	json.NewEncoder(w).Encode(a)
+}
+
 // set the Header Content-Type to "application/json" for all endpoints
 func contentTypeMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -355,7 +428,10 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/", getEndpoints)
 	myRouter.HandleFunc("/api/fwew/r/{lang}/{local}", searchWordReverse)
 	myRouter.HandleFunc("/api/fwew/{nav}", searchWord)
+	myRouter.HandleFunc("/api/fwew-1d/r/{lang}/{local}", searchWordReverse1d)
+	myRouter.HandleFunc("/api/fwew-1d/{nav}", searchWord1d)
 	myRouter.HandleFunc("/api/fwew-simple/{nav}", simpleSearchWord)
+	myRouter.HandleFunc("/api/search/{lang}/{words}", searchBidirectional)
 	myRouter.HandleFunc("/api/list", listWords)
 	myRouter.HandleFunc("/api/list/{args}", listWords)
 	myRouter.HandleFunc("/api/random/{n}", getRandomWords)
@@ -368,13 +444,13 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}", getFullNames)
 	myRouter.HandleFunc("/api/name/alu/{n}/{s}/{nm}/{am}/{dialect}", getNameAlu)
 	myRouter.HandleFunc("/api/phonemedistros", getPhonemeDistros)
+	myRouter.HandleFunc("/api/multiwordwords", getMultiwordWords)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
 }
 
 func main() {
 	loadConfig()
-	fwew.AssureDict()
-	fwew.PhonemeDistros()
+	fwew.StartEverything()
 	handleRequests()
 }

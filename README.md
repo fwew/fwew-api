@@ -52,9 +52,9 @@ The root endpoint returns an object containing the endpoints with expected param
 
 `/fwew/{nav}`
 
-`{nav}` can be any Na'vi word, plain or affixed.
+`{nav}` can be any Na'vi word or words, plain or affixed.
 
-Returns an array of Word objects.
+Returns a 2d array of Word objects.
 
 ### search local to Na'vi
 
