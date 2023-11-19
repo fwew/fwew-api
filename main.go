@@ -65,8 +65,8 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	var endpointsJSON = `{
 	"search_url": "ROOT/fwew/{nav}",
 	"search_reverse_url": "ROOT/fwew/r/{lang}/{local}",
-	"search_url_1d_array": "ROOT/fwew/{nav}",
-	"search_reverse_url_1d_array": "ROOT/fwew/r/{lang}/{local}",
+	"search_url_1d_array": "ROOT/fwew-1d/{nav}",
+	"search_reverse_url_1d_array": "ROOT/fwew-1d/r/{lang}/{local}",
 	"search_complete": "ROOT/search/{lang}/{words}}",
 	"simple_search_url": "ROOT/fwew-simple/{nav}",
 	"list_url": "ROOT/list",
