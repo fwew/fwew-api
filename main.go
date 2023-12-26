@@ -71,8 +71,10 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"simple_search_url": "ROOT/fwew-simple/{nav}",
 	"list_url": "ROOT/list",
 	"list_filter_url": "ROOT/list/{args}",
+	"list_filter_2_url": "ROOT/list2/{c}/{args}",
 	"random_url": "ROOT/random/{n}",
 	"random_filter_url": "ROOT/random/{n}/{args}",
+	"random_filter_2_url": "ROOT/random2/{n}/{c}/{args}",
 	"number_to_navi_url": "ROOT/number/r/{num}",
 	"navi_to_number_url": "ROOT/number/{word}",
 	"lenition_url": "ROOT/lenition",
@@ -207,7 +209,28 @@ func listWords(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	args := strings.Split(vars["args"], " ")
 
-	words, err := fwew.List(args)
+	words, err := fwew.List(args, true)
+	if err != nil || len(words) == 0 {
+		var m message
+		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	json.NewEncoder(w).Encode(words)
+}
+
+func listWords2(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	args := strings.Split(vars["args"], " ")
+	c := strings.Split(vars["c"], " ")
+	checkDigraphs := true
+	if c[0] == "false" {
+		checkDigraphs = false
+	}
+
+	words, err := fwew.List(args, checkDigraphs)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -231,7 +254,36 @@ func getRandomWords(w http.ResponseWriter, r *http.Request) {
 	}
 
 	args := strings.Split(vars["args"], " ")
-	words, err := fwew.Random(n, args)
+	words, err := fwew.Random(n, args, true)
+	if err != nil || len(words) == 0 {
+		var m message
+		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	json.NewEncoder(w).Encode(words)
+}
+
+func getRandomWords2(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	n, err := strconv.Atoi(vars["n"])
+	c := strings.Split(vars["c"], " ")
+	checkDigraphs := true
+	if c[0] == "false" {
+		checkDigraphs = false
+	}
+	if err != nil {
+		var m message
+		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	args := strings.Split(vars["args"], " ")
+	words, err := fwew.Random(n, args, checkDigraphs)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -434,8 +486,10 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/search/{lang}/{words}", searchBidirectional)
 	myRouter.HandleFunc("/api/list", listWords)
 	myRouter.HandleFunc("/api/list/{args}", listWords)
+	myRouter.HandleFunc("/api/list2/{c}/{args}", listWords2)
 	myRouter.HandleFunc("/api/random/{n}", getRandomWords)
 	myRouter.HandleFunc("/api/random/{n}/{args}", getRandomWords)
+	myRouter.HandleFunc("/api/random2/{n}/{c}/{args}", getRandomWords2)
 	myRouter.HandleFunc("/api/number/r/{num}", searchNumberReverse)
 	myRouter.HandleFunc("/api/number/{word}", searchNumber)
 	myRouter.HandleFunc("/api/lenition", getLenitionTable)
