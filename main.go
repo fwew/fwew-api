@@ -65,8 +65,8 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	var endpointsJSON = `{
 	"search_url": "ROOT/fwew/{nav}",
 	"search_reverse_url": "ROOT/fwew/r/{lang}/{local}",
-	"search_url_1d_array": "ROOT/fwew/{nav}",
-	"search_reverse_url_1d_array": "ROOT/fwew/r/{lang}/{local}",
+	"search_url_1d_array": "ROOT/fwew-1d/{nav}",
+	"search_reverse_url_1d_array": "ROOT/fwew-1d/r/{lang}/{local}",
 	"search_complete": "ROOT/search/{lang}/{words}}",
 	"simple_search_url": "ROOT/fwew-simple/{nav}",
 	"list_url": "ROOT/list",
@@ -92,7 +92,7 @@ func searchWord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	navi := vars["nav"]
 
-	words, err := fwew.TranslateFromNavi(navi, true)
+	words, err := fwew.TranslateFromNaviHash(navi, true)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -173,7 +173,7 @@ func simpleSearchWord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	navi := vars["nav"]
 
-	words, err := fwew.TranslateFromNavi(navi, false)
+	words, err := fwew.TranslateFromNaviHash(navi, false)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
