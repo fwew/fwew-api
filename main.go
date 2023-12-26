@@ -209,7 +209,7 @@ func listWords(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	args := strings.Split(vars["args"], " ")
 
-	words, err := fwew.List(args, true)
+	words, err := fwew.List(args, uint8(1))
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -225,9 +225,11 @@ func listWords2(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	args := strings.Split(vars["args"], " ")
 	c := strings.Split(vars["c"], " ")
-	checkDigraphs := true
-	if c[0] == "false" {
-		checkDigraphs = false
+	checkDigraphs := uint8(1)
+	if c[0] == "both" {
+		checkDigraphs = 0
+	} else if c[0] == "false" {
+		checkDigraphs = 2
 	}
 
 	words, err := fwew.List(args, checkDigraphs)
@@ -254,7 +256,7 @@ func getRandomWords(w http.ResponseWriter, r *http.Request) {
 	}
 
 	args := strings.Split(vars["args"], " ")
-	words, err := fwew.Random(n, args, true)
+	words, err := fwew.Random(n, args, uint8(1))
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -270,9 +272,11 @@ func getRandomWords2(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	n, err := strconv.Atoi(vars["n"])
 	c := strings.Split(vars["c"], " ")
-	checkDigraphs := true
-	if c[0] == "false" {
-		checkDigraphs = false
+	checkDigraphs := uint8(1)
+	if c[0] == "both" {
+		checkDigraphs = 0
+	} else if c[0] == "false" {
+		checkDigraphs = 2
 	}
 	if err != nil {
 		var m message
