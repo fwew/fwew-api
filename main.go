@@ -248,10 +248,7 @@ func getRandomWords(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	n, err := strconv.Atoi(vars["n"])
 	if err != nil {
-		var m message
-		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(m)
+		json.NewEncoder(w).Encode(fwew.Text("invalidDecimalError"))
 		return
 	}
 
@@ -279,10 +276,7 @@ func getRandomWords2(w http.ResponseWriter, r *http.Request) {
 		checkDigraphs = 2
 	}
 	if err != nil {
-		var m message
-		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(m)
+		json.NewEncoder(w).Encode(fwew.Text("invalidDecimalError"))
 		return
 	}
 
@@ -360,10 +354,7 @@ func getSingleNames(w http.ResponseWriter, r *http.Request) {
 	d := 0
 
 	if err1 != nil || err2 != nil {
-		var m message
-		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(m)
+		json.NewEncoder(w).Encode(fwew.Text("invalidDecimalError"))
 		return
 	}
 
@@ -388,10 +379,7 @@ func getFullNames(w http.ResponseWriter, r *http.Request) {
 	d := 0
 
 	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
-		var m message
-		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(m)
+		json.NewEncoder(w).Encode(fwew.Text("invalidDecimalError"))
 		return
 	}
 
@@ -415,10 +403,7 @@ func getNameAlu(w http.ResponseWriter, r *http.Request) {
 	d := 0
 
 	if err1 != nil || err2 != nil {
-		var m message
-		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(m)
+		json.NewEncoder(w).Encode(fwew.Text("invalidDecimalError"))
 		return
 	}
 
