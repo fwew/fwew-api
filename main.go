@@ -226,7 +226,7 @@ func listWords2(w http.ResponseWriter, r *http.Request) {
 	args := strings.Split(vars["args"], " ")
 	c := strings.Split(vars["c"], " ")
 	checkDigraphs := uint8(1)
-	if c[0] == "both" {
+	if c[0] == "maybe" {
 		checkDigraphs = 0
 	} else if c[0] == "false" {
 		checkDigraphs = 2
@@ -270,7 +270,7 @@ func getRandomWords2(w http.ResponseWriter, r *http.Request) {
 	n, err := strconv.Atoi(vars["n"])
 	c := strings.Split(vars["c"], " ")
 	checkDigraphs := uint8(1)
-	if c[0] == "both" {
+	if c[0] == "maybe" {
 		checkDigraphs = 0
 	} else if c[0] == "false" {
 		checkDigraphs = 2
