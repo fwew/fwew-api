@@ -73,6 +73,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"list_filter_url": "ROOT/list/{args}",
 	"list_filter_2_url": "ROOT/list2/{c}/{args}",
 	"random_url": "ROOT/random/{n}",
+	"random_2_url": "ROOT/random2/{n}/{c}",
 	"random_filter_url": "ROOT/random/{n}/{args}",
 	"random_filter_2_url": "ROOT/random2/{n}/{c}/{args}",
 	"number_to_navi_url": "ROOT/number/r/{num}",
@@ -82,6 +83,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"name_single_url": "ROOT/name/single/{n}/{s}/{dialect}",
 	"name_full_url": "ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}",
 	"name_alu_url": "ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}"
+	"homonyms_url": "ROOT/homonyms"
 }`
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, " ", "")
@@ -453,6 +455,11 @@ func getMultiwordWords(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(a)
 }
 
+func getHomonyms(w http.ResponseWriter, r *http.Request) {
+	a, _ := fwew.GetHomonyms()
+	json.NewEncoder(w).Encode(a)
+}
+
 // set the Header Content-Type to "application/json" for all endpoints
 func contentTypeMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -489,6 +496,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/name/alu/{n}/{s}/{nm}/{am}/{dialect}", getNameAlu)
 	myRouter.HandleFunc("/api/phonemedistros", getPhonemeDistros)
 	myRouter.HandleFunc("/api/multiwordwords", getMultiwordWords)
+	myRouter.HandleFunc("/api/homonyms", getHomonyms)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
 }
