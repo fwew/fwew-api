@@ -479,6 +479,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/random/{n}", getRandomWords)
 	myRouter.HandleFunc("/api/random/{n}/{args}", getRandomWords)
 	myRouter.HandleFunc("/api/random2/{n}/{c}/{args}", getRandomWords2)
+	myRouter.HandleFunc("/api/random2/{n}/{c}", getRandomWords2)
 	myRouter.HandleFunc("/api/number/r/{num}", searchNumberReverse)
 	myRouter.HandleFunc("/api/number/{word}", searchNumber)
 	myRouter.HandleFunc("/api/lenition", getLenitionTable)
