@@ -84,6 +84,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"name_full_url": "ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}",
 	"name_alu_url": "ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}"
 	"homonyms_url": "ROOT/homonyms"
+	"dict-len-url": "ROOT/total-words"
 }`
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, " ", "")
@@ -460,6 +461,11 @@ func getHomonyms(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(a)
 }
 
+func getDictLen(w http.ResponseWriter, r *http.Request) {
+	a, _ := fwew.GetDictSize()
+	json.NewEncoder(w).Encode("There are " + strconv.Itoa(a) + " words in the dictionary.")
+}
+
 // set the Header Content-Type to "application/json" for all endpoints
 func contentTypeMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -497,6 +503,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/phonemedistros", getPhonemeDistros)
 	myRouter.HandleFunc("/api/multiwordwords", getMultiwordWords)
 	myRouter.HandleFunc("/api/homonyms", getHomonyms)
+	myRouter.HandleFunc("/api/total-words", getDictLen)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
 }
