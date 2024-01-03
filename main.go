@@ -470,7 +470,7 @@ func getDictLen(w http.ResponseWriter, r *http.Request) {
 func getReefFromIpa(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	i, _ := vars["i"]
-	json.NewEncoder(w).Encode(fwew.ReefMe(i))
+	json.NewEncoder(w).Encode(fwew.ReefMe(i, false))
 }
 
 // set the Header Content-Type to "application/json" for all endpoints
