@@ -517,19 +517,6 @@ func handleRequests() {
 }
 
 func main() {
-	fmt.Println(fwew.ReefMe("a.nʊk̚"))
-	fmt.Println(fwew.ReefMe("k'it'"))
-	fmt.Println(fwew.ReefMe("ˈpṛ.k'ɛn.tṛ.kṛ"))
-	fmt.Println(fwew.ReefMe("ˈku.ʔʊp̚"))
-	fmt.Println(fwew.ReefMe("ˈlɪ.ʔu.pʊk̚"))
-	fmt.Println(fwew.ReefMe("ˈʔɪŋ.lɪ.sɪ"))
-	fmt.Println(fwew.ReefMe("væʔ"))
-	fmt.Println(fwew.ReefMe("ut.ɾa.ja mok.ɾi"))
-	fmt.Println(fwew.ReefMe("aj.ˈfo] or [ˈaj.fo"))
-	fmt.Println(fwew.ReefMe("aj.ˈŋa"))
-	fmt.Println(fwew.ReefMe("ˈz·ɛŋ.kɛ"))
-	fmt.Println(fwew.ReefMe("ta.ˈfkip̚"))
-
 	loadConfig()
 	fwew.StartEverything()
 	handleRequests()
