@@ -85,6 +85,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"name_alu_url": "ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}"
 	"homonyms_url": "ROOT/homonyms"
 	"dict-len-url": "ROOT/total-words"
+	"reef-ipa-url": "ROOT/reef/{i}"
 }`
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, " ", "")
@@ -466,6 +467,12 @@ func getDictLen(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("There are " + strconv.Itoa(a) + " words in the dictionary.")
 }
 
+func getReefFromIpa(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	i, _ := vars["i"]
+	json.NewEncoder(w).Encode(fwew.ReefMe(i))
+}
+
 // set the Header Content-Type to "application/json" for all endpoints
 func contentTypeMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -504,11 +511,25 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/multiwordwords", getMultiwordWords)
 	myRouter.HandleFunc("/api/homonyms", getHomonyms)
 	myRouter.HandleFunc("/api/total-words", getDictLen)
+	myRouter.HandleFunc("/api/reef/{i}", getReefFromIpa)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
 }
 
 func main() {
+	fmt.Println(fwew.ReefMe("a.nʊk̚"))
+	fmt.Println(fwew.ReefMe("k'it'"))
+	fmt.Println(fwew.ReefMe("ˈpṛ.k'ɛn.tṛ.kṛ"))
+	fmt.Println(fwew.ReefMe("ˈku.ʔʊp̚"))
+	fmt.Println(fwew.ReefMe("ˈlɪ.ʔu.pʊk̚"))
+	fmt.Println(fwew.ReefMe("ˈʔɪŋ.lɪ.sɪ"))
+	fmt.Println(fwew.ReefMe("væʔ"))
+	fmt.Println(fwew.ReefMe("ut.ɾa.ja mok.ɾi"))
+	fmt.Println(fwew.ReefMe("aj.ˈfo] or [ˈaj.fo"))
+	fmt.Println(fwew.ReefMe("aj.ˈŋa"))
+	fmt.Println(fwew.ReefMe("ˈz·ɛŋ.kɛ"))
+	fmt.Println(fwew.ReefMe("ta.ˈfkip̚"))
+
 	loadConfig()
 	fwew.StartEverything()
 	handleRequests()
