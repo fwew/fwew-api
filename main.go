@@ -71,8 +71,11 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"simple_search_url": "ROOT/fwew-simple/{nav}",
 	"list_url": "ROOT/list",
 	"list_filter_url": "ROOT/list/{args}",
+	"list_filter_2_url": "ROOT/list2/{c}/{args}",
 	"random_url": "ROOT/random/{n}",
+	"random_2_url": "ROOT/random2/{n}/{c}",
 	"random_filter_url": "ROOT/random/{n}/{args}",
+	"random_filter_2_url": "ROOT/random2/{n}/{c}/{args}",
 	"number_to_navi_url": "ROOT/number/r/{num}",
 	"navi_to_number_url": "ROOT/number/{word}",
 	"lenition_url": "ROOT/lenition",
@@ -80,6 +83,9 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"name_single_url": "ROOT/name/single/{n}/{s}/{dialect}",
 	"name_full_url": "ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}",
 	"name_alu_url": "ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}"
+	"homonyms_url": "ROOT/homonyms"
+	"dict-len-url": "ROOT/total-words"
+	"reef-ipa-url": "ROOT/reef/{i}"
 }`
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, " ", "")
@@ -207,7 +213,30 @@ func listWords(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	args := strings.Split(vars["args"], " ")
 
-	words, err := fwew.List(args)
+	words, err := fwew.List(args, uint8(1))
+	if err != nil || len(words) == 0 {
+		var m message
+		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	json.NewEncoder(w).Encode(words)
+}
+
+func listWords2(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	args := strings.Split(vars["args"], " ")
+	c := strings.Split(vars["c"], " ")
+	checkDigraphs := uint8(1)
+	if c[0] == "maybe" {
+		checkDigraphs = 0
+	} else if c[0] == "false" {
+		checkDigraphs = 2
+	}
+
+	words, err := fwew.List(args, checkDigraphs)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -223,15 +252,40 @@ func getRandomWords(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	n, err := strconv.Atoi(vars["n"])
 	if err != nil {
+		json.NewEncoder(w).Encode(fwew.Text("invalidDecimalError"))
+		return
+	}
+
+	args := strings.Split(vars["args"], " ")
+	words, err := fwew.Random(n, args, uint8(1))
+	if err != nil || len(words) == 0 {
 		var m message
-		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
+		m.Message = "no results"
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(m)
 		return
 	}
 
+	json.NewEncoder(w).Encode(words)
+}
+
+func getRandomWords2(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	n, err := strconv.Atoi(vars["n"])
+	c := strings.Split(vars["c"], " ")
+	checkDigraphs := uint8(1)
+	if c[0] == "maybe" {
+		checkDigraphs = 0
+	} else if c[0] == "false" {
+		checkDigraphs = 2
+	}
+	if err != nil {
+		json.NewEncoder(w).Encode(fwew.Text("invalidDecimalError"))
+		return
+	}
+
 	args := strings.Split(vars["args"], " ")
-	words, err := fwew.Random(n, args)
+	words, err := fwew.Random(n, args, checkDigraphs)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -304,10 +358,7 @@ func getSingleNames(w http.ResponseWriter, r *http.Request) {
 	d := 0
 
 	if err1 != nil || err2 != nil {
-		var m message
-		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(m)
+		json.NewEncoder(w).Encode(fwew.Text("invalidDecimalError"))
 		return
 	}
 
@@ -332,10 +383,7 @@ func getFullNames(w http.ResponseWriter, r *http.Request) {
 	d := 0
 
 	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
-		var m message
-		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(m)
+		json.NewEncoder(w).Encode(fwew.Text("invalidDecimalError"))
 		return
 	}
 
@@ -359,10 +407,7 @@ func getNameAlu(w http.ResponseWriter, r *http.Request) {
 	d := 0
 
 	if err1 != nil || err2 != nil {
-		var m message
-		m.Message = fmt.Sprintf("%s: %s", fwew.Text("invalidDecimalError"), vars["n"])
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(m)
+		json.NewEncoder(w).Encode(fwew.Text("invalidDecimalError"))
 		return
 	}
 
@@ -412,6 +457,22 @@ func getMultiwordWords(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(a)
 }
 
+func getHomonyms(w http.ResponseWriter, r *http.Request) {
+	a, _ := fwew.GetHomonyms()
+	json.NewEncoder(w).Encode(a)
+}
+
+func getDictLen(w http.ResponseWriter, r *http.Request) {
+	a, _ := fwew.GetDictSize()
+	json.NewEncoder(w).Encode("There are " + strconv.Itoa(a) + " words in the dictionary.")
+}
+
+func getReefFromIpa(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	i, _ := vars["i"]
+	json.NewEncoder(w).Encode(fwew.ReefMe(i, false))
+}
+
 // set the Header Content-Type to "application/json" for all endpoints
 func contentTypeMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -434,8 +495,11 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/search/{lang}/{words}", searchBidirectional)
 	myRouter.HandleFunc("/api/list", listWords)
 	myRouter.HandleFunc("/api/list/{args}", listWords)
+	myRouter.HandleFunc("/api/list2/{c}/{args}", listWords2)
 	myRouter.HandleFunc("/api/random/{n}", getRandomWords)
 	myRouter.HandleFunc("/api/random/{n}/{args}", getRandomWords)
+	myRouter.HandleFunc("/api/random2/{n}/{c}/{args}", getRandomWords2)
+	myRouter.HandleFunc("/api/random2/{n}/{c}", getRandomWords2)
 	myRouter.HandleFunc("/api/number/r/{num}", searchNumberReverse)
 	myRouter.HandleFunc("/api/number/{word}", searchNumber)
 	myRouter.HandleFunc("/api/lenition", getLenitionTable)
@@ -445,6 +509,9 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/name/alu/{n}/{s}/{nm}/{am}/{dialect}", getNameAlu)
 	myRouter.HandleFunc("/api/phonemedistros", getPhonemeDistros)
 	myRouter.HandleFunc("/api/multiwordwords", getMultiwordWords)
+	myRouter.HandleFunc("/api/homonyms", getHomonyms)
+	myRouter.HandleFunc("/api/total-words", getDictLen)
+	myRouter.HandleFunc("/api/reef/{i}", getReefFromIpa)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
 }
