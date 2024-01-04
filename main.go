@@ -82,9 +82,9 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"version_url": "ROOT/version",
 	"name_single_url": "ROOT/name/single/{n}/{s}/{dialect}",
 	"name_full_url": "ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}",
-	"name_alu_url": "ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}"
-	"homonyms_url": "ROOT/homonyms"
-	"dict-len-url": "ROOT/total-words"
+	"name_alu_url": "ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}",
+	"homonyms_url": "ROOT/homonyms",
+	"dict-len-url": "ROOT/total-words",
 	"reef-ipa-url": "ROOT/reef/{i}"
 }`
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
