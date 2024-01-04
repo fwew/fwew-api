@@ -142,9 +142,7 @@ func searchWord1d(w http.ResponseWriter, r *http.Request) {
 
 	oneDWords := []fwew.Word{}
 	for _, a := range words {
-		for _, b := range a {
-			oneDWords = append(oneDWords, b)
-		}
+		oneDWords = append(oneDWords, a...)
 	}
 
 	json.NewEncoder(w).Encode(oneDWords)
@@ -166,9 +164,7 @@ func searchWordReverse1d(w http.ResponseWriter, r *http.Request) {
 
 	oneDWords := []fwew.Word{}
 	for _, a := range words {
-		for _, b := range a {
-			oneDWords = append(oneDWords, b)
-		}
+		oneDWords = append(oneDWords, a...)
 	}
 
 	json.NewEncoder(w).Encode(oneDWords)
@@ -469,8 +465,7 @@ func getDictLen(w http.ResponseWriter, r *http.Request) {
 
 func getReefFromIpa(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	i, _ := vars["i"]
-	json.NewEncoder(w).Encode(fwew.ReefMe(i, false))
+	json.NewEncoder(w).Encode(fwew.ReefMe(vars["i"], false))
 }
 
 // set the Header Content-Type to "application/json" for all endpoints
