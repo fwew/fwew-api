@@ -1,4 +1,4 @@
-github.com/fwew/fwew-lib/v5 v5.11.0 h1:yBoBiBjyy7qUfrBp5m9Xxeq/hL24/WnlhxwlU44AYf4=
-github.com/fwew/fwew-lib/v5 v5.11.0/go.mod h1:8/L3XunHMuddmkqvpk3yb71FkfbTEOy/txxnAJv0dVM=
-github.com/gorilla/mux v1.7.4 h1:VuZ8uybHlWmqV03+zRzdwKL4tUnIp1MAQtp1mIFE1bc=
-github.com/gorilla/mux v1.7.4/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
+github.com/fwew/fwew-lib/v5 v5.11.1 h1:777a2QZPluLkAfxXPkvS4Gs62ysm6zfiNCMu0NhzZIo=
+github.com/fwew/fwew-lib/v5 v5.11.1/go.mod h1:QHtBMZloJE+sVrdpWQgdAS8qgNDJ/2Rx5gXbHw+qSm4=
+github.com/gorilla/mux v1.8.1 h1:TuBL49tXwgrFYWhqrNgrUNEY92u81SPhu7sTdzQEiWY=
+github.com/gorilla/mux v1.8.1/go.mod h1:AKf9I4AEqPTmMytcMc0KkNouC66V3BtZ4qD5fmWSiMQ=
