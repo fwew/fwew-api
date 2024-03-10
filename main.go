@@ -82,9 +82,9 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"version_url": "ROOT/version",
 	"name_single_url": "ROOT/name/single/{n}/{s}/{dialect}",
 	"name_full_url": "ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}",
-	"name_alu_url": "ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}"
-	"homonyms_url": "ROOT/homonyms"
-	"dict-len-url": "ROOT/total-words"
+	"name_alu_url": "ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}",
+	"homonyms_url": "ROOT/homonyms",
+	"dict-len-url": "ROOT/total-words",
 	"reef-ipa-url": "ROOT/reef/{i}"
 }`
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
@@ -142,9 +142,7 @@ func searchWord1d(w http.ResponseWriter, r *http.Request) {
 
 	oneDWords := []fwew.Word{}
 	for _, a := range words {
-		for _, b := range a {
-			oneDWords = append(oneDWords, b)
-		}
+		oneDWords = append(oneDWords, a...)
 	}
 
 	json.NewEncoder(w).Encode(oneDWords)
@@ -166,9 +164,7 @@ func searchWordReverse1d(w http.ResponseWriter, r *http.Request) {
 
 	oneDWords := []fwew.Word{}
 	for _, a := range words {
-		for _, b := range a {
-			oneDWords = append(oneDWords, b)
-		}
+		oneDWords = append(oneDWords, a...)
 	}
 
 	json.NewEncoder(w).Encode(oneDWords)
@@ -469,8 +465,7 @@ func getDictLen(w http.ResponseWriter, r *http.Request) {
 
 func getReefFromIpa(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	i, _ := vars["i"]
-	json.NewEncoder(w).Encode(fwew.ReefMe(i, false))
+	json.NewEncoder(w).Encode(fwew.ReefMe(vars["i"], false))
 }
 
 // set the Header Content-Type to "application/json" for all endpoints
