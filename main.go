@@ -84,6 +84,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"name_full_url": "ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}",
 	"name_alu_url": "ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}",
 	"homonyms_url": "ROOT/homonyms",
+	"multi_ipa_url": "ROOT/multi-ipa",
 	"dict-len-url": "ROOT/total-words",
 	"reef-ipa-url": "ROOT/reef/{i}"
 }`
@@ -458,6 +459,11 @@ func getHomonyms(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(a)
 }
 
+func getMultiIPA(w http.ResponseWriter, r *http.Request) {
+	a, _ := fwew.GetMultiIPA()
+	json.NewEncoder(w).Encode(a)
+}
+
 func getDictLen(w http.ResponseWriter, r *http.Request) {
 	a, _ := fwew.GetDictSize()
 	json.NewEncoder(w).Encode("There are " + strconv.Itoa(a) + " words in the dictionary.")
@@ -505,6 +511,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/phonemedistros", getPhonemeDistros)
 	myRouter.HandleFunc("/api/multiwordwords", getMultiwordWords)
 	myRouter.HandleFunc("/api/homonyms", getHomonyms)
+	myRouter.HandleFunc("/api/multi-ipa", getMultiIPA)
 	myRouter.HandleFunc("/api/total-words", getDictLen)
 	myRouter.HandleFunc("/api/reef/{i}", getReefFromIpa)
 
