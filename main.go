@@ -474,6 +474,11 @@ func getReefFromIpa(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(fwew.ReefMe(vars["i"], false))
 }
 
+func getValidity(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	json.NewEncoder(w).Encode(fwew.IsValidNavi(vars["i"]))
+}
+
 // set the Header Content-Type to "application/json" for all endpoints
 func contentTypeMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -514,6 +519,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/multi-ipa", getMultiIPA)
 	myRouter.HandleFunc("/api/total-words", getDictLen)
 	myRouter.HandleFunc("/api/reef/{i}", getReefFromIpa)
+	myRouter.HandleFunc("/api/valid/{i}", getValidity)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
 }
