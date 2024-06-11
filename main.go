@@ -459,6 +459,11 @@ func getHomonyms(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(a)
 }
 
+func getOddballs(w http.ResponseWriter, r *http.Request) {
+	a, _ := fwew.GetOddballs()
+	json.NewEncoder(w).Encode(a)
+}
+
 func getMultiIPA(w http.ResponseWriter, r *http.Request) {
 	a, _ := fwew.GetMultiIPA()
 	json.NewEncoder(w).Encode(a)
@@ -516,6 +521,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/phonemedistros", getPhonemeDistros)
 	myRouter.HandleFunc("/api/multiwordwords", getMultiwordWords)
 	myRouter.HandleFunc("/api/homonyms", getHomonyms)
+	myRouter.HandleFunc("/api/oddballs", getOddballs)
 	myRouter.HandleFunc("/api/multi-ipa", getMultiIPA)
 	myRouter.HandleFunc("/api/total-words", getDictLen)
 	myRouter.HandleFunc("/api/reef/{i}", getReefFromIpa)
