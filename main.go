@@ -84,9 +84,11 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"name_full_url": "ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}",
 	"name_alu_url": "ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}",
 	"homonyms_url": "ROOT/homonyms",
+	"oddballs_url": "ROOT/oddballs",
 	"multi_ipa_url": "ROOT/multi-ipa",
 	"dict-len-url": "ROOT/total-words",
-	"reef-ipa-url": "ROOT/reef/{i}"
+	"reef-ipa-url": "ROOT/reef/{i}",
+	"validity-url": "ROOT/valid/{i}"
 }`
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, " ", "")
@@ -459,6 +461,11 @@ func getHomonyms(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(a)
 }
 
+func getOddballs(w http.ResponseWriter, r *http.Request) {
+	a, _ := fwew.GetOddballs()
+	json.NewEncoder(w).Encode(a)
+}
+
 func getMultiIPA(w http.ResponseWriter, r *http.Request) {
 	a, _ := fwew.GetMultiIPA()
 	json.NewEncoder(w).Encode(a)
@@ -472,6 +479,11 @@ func getDictLen(w http.ResponseWriter, r *http.Request) {
 func getReefFromIpa(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	json.NewEncoder(w).Encode(fwew.ReefMe(vars["i"], false))
+}
+
+func getValidity(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	json.NewEncoder(w).Encode(fwew.IsValidNavi(vars["i"]))
 }
 
 // set the Header Content-Type to "application/json" for all endpoints
@@ -511,9 +523,11 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/phonemedistros", getPhonemeDistros)
 	myRouter.HandleFunc("/api/multiwordwords", getMultiwordWords)
 	myRouter.HandleFunc("/api/homonyms", getHomonyms)
+	myRouter.HandleFunc("/api/oddballs", getOddballs)
 	myRouter.HandleFunc("/api/multi-ipa", getMultiIPA)
 	myRouter.HandleFunc("/api/total-words", getDictLen)
 	myRouter.HandleFunc("/api/reef/{i}", getReefFromIpa)
+	myRouter.HandleFunc("/api/valid/{i}", getValidity)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
 }
