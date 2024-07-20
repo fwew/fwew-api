@@ -18,7 +18,7 @@ var config Config
 
 // global configured instance of Version
 var version = Version{
-	APIVersion:  "1.4.0",
+	APIVersion:  "1.5.0",
 	FwewVersion: fmt.Sprintf("%d.%d.%d", fwew.Version.Major, fwew.Version.Minor, fwew.Version.Patch),
 	DictBuild:   fwew.Version.DictBuild,
 }
@@ -80,6 +80,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"navi_to_number_url": "ROOT/number/{word}",
 	"lenition_url": "ROOT/lenition",
 	"version_url": "ROOT/version",
+	"update_url": "ROOT/update",
 	"name_single_url": "ROOT/name/single/{n}/{s}/{dialect}",
 	"name_full_url": "ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}",
 	"name_alu_url": "ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}",
@@ -349,6 +350,23 @@ func getVersion(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(version)
 }
 
+func update(w http.ResponseWriter, r *http.Request) {
+	err := fwew.UpdateDict()
+	if err != nil {
+		var m message
+		m.Message = "Update failed"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(m)
+		return
+	} else {
+		var m message
+		m.Message = "Update successful"
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+}
+
 func getSingleNames(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	n, err1 := strconv.Atoi(vars["n"])
@@ -517,6 +535,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/number/{word}", searchNumber)
 	myRouter.HandleFunc("/api/lenition", getLenitionTable)
 	myRouter.HandleFunc("/api/version", getVersion)
+	myRouter.HandleFunc("/api/update", update)
 	myRouter.HandleFunc("/api/name/single/{n}/{s}/{dialect}", getSingleNames)
 	myRouter.HandleFunc("/api/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}", getFullNames)
 	myRouter.HandleFunc("/api/name/alu/{n}/{s}/{nm}/{am}/{dialect}", getNameAlu)
