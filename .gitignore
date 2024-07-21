@@ -25,5 +25,9 @@ fwew-api
 dictionary-v2.txt
 .idea
 
-#config
+# config
 config.json
+
+# environment
+.env
+
