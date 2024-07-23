@@ -18,7 +18,7 @@ var config Config
 
 // global configured instance of Version
 var version = Version{
-	APIVersion:  "1.5.0",
+	APIVersion:  "1.5.1",
 	FwewVersion: fmt.Sprintf("%d.%d.%d", fwew.Version.Major, fwew.Version.Minor, fwew.Version.Patch),
 	DictBuild:   fwew.Version.DictBuild,
 }
@@ -63,33 +63,37 @@ func loadConfig() {
 
 func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	var endpointsJSON = `{
-	"search_url": "ROOT/fwew/{nav}",
-	"search_reverse_url": "ROOT/fwew/r/{lang}/{local}",
-	"search_url_1d_array": "ROOT/fwew-1d/{nav}",
-	"search_reverse_url_1d_array": "ROOT/fwew-1d/r/{lang}/{local}",
-	"search_complete": "ROOT/search/{lang}/{words}}",
-	"simple_search_url": "ROOT/fwew-simple/{nav}",
-	"list_url": "ROOT/list",
-	"list_filter_url": "ROOT/list/{args}",
-	"list_filter_2_url": "ROOT/list2/{c}/{args}",
-	"random_url": "ROOT/random/{n}",
-	"random_2_url": "ROOT/random2/{n}/{c}",
-	"random_filter_url": "ROOT/random/{n}/{args}",
-	"random_filter_2_url": "ROOT/random2/{n}/{c}/{args}",
-	"number_to_navi_url": "ROOT/number/r/{num}",
-	"navi_to_number_url": "ROOT/number/{word}",
-	"lenition_url": "ROOT/lenition",
-	"version_url": "ROOT/version",
-	"update_url": "ROOT/update",
-	"name_single_url": "ROOT/name/single/{n}/{s}/{dialect}",
-	"name_full_url": "ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}",
-	"name_alu_url": "ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}",
-	"homonyms_url": "ROOT/homonyms",
-	"oddballs_url": "ROOT/oddballs",
-	"multi_ipa_url": "ROOT/multi-ipa",
-	"dict-len-url": "ROOT/total-words",
-	"reef-ipa-url": "ROOT/reef/{i}",
-	"validity-url": "ROOT/valid/{i}"
+	"/api/": "Fwew API Index",
+	"/api/fwew/{nav}": "Search Word Na'vi -> Local (returns 2-Dimensional Word array)",
+	"/api/fwew/r/{lang}/{local}": "Search Word Local -> Na'vi (returns 2-Dimensional Word array)",
+	"/api/fwew-1d/{nav}": "search Word Na'vi -> Local (returns 1-Dimensional Word array)",
+	"/api/fwew-1d/r/{lang}/{local}": "Search Word Local -> Na'vi (returns 1-Dimensional Word array)'",
+	"/api/fwew-simple/{nav}": "Search Na'vi -> Local without checking affixes (returns 2-Dimensional Word array)",
+	"/api/homonyms": "List Na'vi Homonyms",
+	"/api/lenition": "Na'vi Lenition Table",
+	"/api/list": "List all Words (returns 1-Dimensional Word array)",
+	"/api/list/{args}": "List Words with attribute filtering",
+	"/api/list2/{c}/{args}": "List Words with attribute filtering and check-digraphs options",
+	"/api/multi-ipa": "List Words with multiple IPA values (alternative pronunciation)",
+	"/api/multiwordwords": "List Words that have two or more parts separated by a space",
+	"/api/name/alu/{n}/{s}/{nm}/{am}/{dialect}": "Generate title style name(s)",
+	"/api/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}": "Generate Na'vi names in full canonical format",
+	"/api/name/single/{n}/{s}/{dialect}": "Generate single Na'vi names",
+	"/api/number/{word}": "Search a Na'vi number word to see the decimal and octal numeral forms",
+	"/api/number/r/{num}": "Search an integer number between 0 and 32767 to see the Na'vi word and octal numeral forms",
+	"/api/oddballs": "List Words that are canon but contradict Na'vi syllable rules",
+	"/api/phonemedistros": "Get Phoneme Distribution data",
+	"/api/random/{n}": "Get random Words",
+	"/api/random/{n}/{args}": "Get random Words with attribute filtering",
+	"/api/random2/{n}/{c}": "Get random Words with check-digraphs options",
+	"/api/random2/{n}/{c}/{args}": "Get random Words with attribute filtering and check-digraphs options",
+	"/api/reef/{i}": "Get Reef Na'vi syllables and IPA by Forest Na'vi IPA",
+	"/api/search/{lang}/{words}": "Search Na'vi <-> Local",
+	"/api/total-words": "Get the number of Words in the dictionary",
+	"/api/update": "Reload the dictionary cache",
+	"/api/valid/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules",
+	"/api/version": "Version information",
+	
 }`
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, " ", "")
@@ -518,35 +522,35 @@ func handleRequests() {
 	myRouter.Use(contentTypeMiddleware)
 
 	myRouter.HandleFunc("/api/", getEndpoints)
-	myRouter.HandleFunc("/api/fwew/r/{lang}/{local}", searchWordReverse)
 	myRouter.HandleFunc("/api/fwew/{nav}", searchWord)
-	myRouter.HandleFunc("/api/fwew-1d/r/{lang}/{local}", searchWordReverse1d)
+	myRouter.HandleFunc("/api/fwew/r/{lang}/{local}", searchWordReverse)
 	myRouter.HandleFunc("/api/fwew-1d/{nav}", searchWord1d)
+	myRouter.HandleFunc("/api/fwew-1d/r/{lang}/{local}", searchWordReverse1d)
 	myRouter.HandleFunc("/api/fwew-simple/{nav}", simpleSearchWord)
-	myRouter.HandleFunc("/api/search/{lang}/{words}", searchBidirectional)
+	myRouter.HandleFunc("/api/homonyms", getHomonyms)
+	myRouter.HandleFunc("/api/lenition", getLenitionTable)
 	myRouter.HandleFunc("/api/list", listWords)
 	myRouter.HandleFunc("/api/list/{args}", listWords)
 	myRouter.HandleFunc("/api/list2/{c}/{args}", listWords2)
+	myRouter.HandleFunc("/api/multi-ipa", getMultiIPA)
+	myRouter.HandleFunc("/api/multiwordwords", getMultiwordWords)
+	myRouter.HandleFunc("/api/name/alu/{n}/{s}/{nm}/{am}/{dialect}", getNameAlu)
+	myRouter.HandleFunc("/api/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}", getFullNames)
+	myRouter.HandleFunc("/api/name/single/{n}/{s}/{dialect}", getSingleNames)
+	myRouter.HandleFunc("/api/number/{word}", searchNumber)
+	myRouter.HandleFunc("/api/number/r/{num}", searchNumberReverse)
+	myRouter.HandleFunc("/api/oddballs", getOddballs)
+	myRouter.HandleFunc("/api/phonemedistros", getPhonemeDistros)
 	myRouter.HandleFunc("/api/random/{n}", getRandomWords)
 	myRouter.HandleFunc("/api/random/{n}/{args}", getRandomWords)
-	myRouter.HandleFunc("/api/random2/{n}/{c}/{args}", getRandomWords2)
 	myRouter.HandleFunc("/api/random2/{n}/{c}", getRandomWords2)
-	myRouter.HandleFunc("/api/number/r/{num}", searchNumberReverse)
-	myRouter.HandleFunc("/api/number/{word}", searchNumber)
-	myRouter.HandleFunc("/api/lenition", getLenitionTable)
-	myRouter.HandleFunc("/api/version", getVersion)
-	myRouter.HandleFunc("/api/update", update)
-	myRouter.HandleFunc("/api/name/single/{n}/{s}/{dialect}", getSingleNames)
-	myRouter.HandleFunc("/api/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}", getFullNames)
-	myRouter.HandleFunc("/api/name/alu/{n}/{s}/{nm}/{am}/{dialect}", getNameAlu)
-	myRouter.HandleFunc("/api/phonemedistros", getPhonemeDistros)
-	myRouter.HandleFunc("/api/multiwordwords", getMultiwordWords)
-	myRouter.HandleFunc("/api/homonyms", getHomonyms)
-	myRouter.HandleFunc("/api/oddballs", getOddballs)
-	myRouter.HandleFunc("/api/multi-ipa", getMultiIPA)
-	myRouter.HandleFunc("/api/total-words", getDictLen)
+	myRouter.HandleFunc("/api/random2/{n}/{c}/{args}", getRandomWords2)
 	myRouter.HandleFunc("/api/reef/{i}", getReefFromIpa)
+	myRouter.HandleFunc("/api/search/{lang}/{words}", searchBidirectional)
+	myRouter.HandleFunc("/api/total-words", getDictLen)
+	myRouter.HandleFunc("/api/update", update)
 	myRouter.HandleFunc("/api/valid/{i}", getValidity)
+	myRouter.HandleFunc("/api/version", getVersion)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
 }
