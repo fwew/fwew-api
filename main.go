@@ -18,7 +18,7 @@ var config Config
 
 // global configured instance of Version
 var version = Version{
-	APIVersion:  "1.5.2",
+	APIVersion:  "1.5.3",
 	FwewVersion: fmt.Sprintf("%d.%d.%d", fwew.Version.Major, fwew.Version.Minor, fwew.Version.Patch),
 	DictBuild:   fwew.Version.DictBuild,
 }
@@ -62,40 +62,39 @@ func loadConfig() {
 }
 
 func getEndpoints(w http.ResponseWriter, r *http.Request) {
-	var endpointsJSON = `{
-	"ROOT/": "Fwew API Index",
-	"ROOT/fwew/{nav}": "Search Word Na'vi -> Local (returns 2-Dimensional Word array)",
-	"ROOT/fwew/r/{lang}/{local}": "Search Word Local -> Na'vi (returns 2-Dimensional Word array)",
-	"ROOT/fwew-1d/{nav}": "search Word Na'vi -> Local (returns 1-Dimensional Word array)",
-	"ROOT/fwew-1d/r/{lang}/{local}": "Search Word Local -> Na'vi (returns 1-Dimensional Word array)'",
-	"ROOT/fwew-simple/{nav}": "Search Na'vi -> Local without checking affixes (returns 2-Dimensional Word array)",
-	"ROOT/homonyms": "List Na'vi Homonyms",
-	"ROOT/lenition": "Na'vi Lenition Table",
-	"ROOT/list": "List all Words (returns 1-Dimensional Word array)",
-	"ROOT/list/{args}": "List Words with attribute filtering",
-	"ROOT/list2/{c}/{args}": "List Words with attribute filtering and check-digraphs options",
-	"ROOT/multi-ipa": "List Words with multiple IPA values (alternative pronunciation)",
-	"ROOT/multiwordwords": "List Words that have two or more parts separated by a space",
-	"ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}": "Generate title style name(s)",
-	"ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}": "Generate Na'vi names in full canonical format",
-	"ROOT/name/single/{n}/{s}/{dialect}": "Generate single Na'vi names",
-	"ROOT/number/{word}": "Search a Na'vi number word to see the decimal and octal numeral forms",
-	"ROOT/number/r/{num}": "Search an integer number between 0 and 32767 to see the Na'vi word and octal numeral forms",
-	"ROOT/oddballs": "List Words that are canon but contradict Na'vi syllable rules",
-	"ROOT/phonemedistros": "Get Phoneme Distribution data",
-	"ROOT/random/{n}": "Get random Words",
-	"ROOT/random/{n}/{args}": "Get random Words with attribute filtering",
-	"ROOT/random2/{n}/{c}": "Get random Words with check-digraphs options",
-	"ROOT/random2/{n}/{c}/{args}": "Get random Words with attribute filtering and check-digraphs options",
-	"ROOT/reef/{i}": "Get Reef Na'vi syllables and IPA by Forest Na'vi IPA",
-	"ROOT/search/{lang}/{words}": "Search Na'vi <-> Local",
-	"ROOT/total-words": "Get the number of Words in the dictionary",
-	"ROOT/update": "Reload the dictionary cache",
-	"ROOT/valid/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules",
-	"ROOT/version": "Version information"
+	var endpointsJSON = `{ 
+	"ROOT/": "Fwew API Index", 
+	"ROOT/fwew/{nav}": "Search Word Na'vi -> Local (returns 2-Dimensional Word array)", 
+	"ROOT/fwew/r/{lang}/{local}": "Search Word Local -> Na'vi (returns 2-Dimensional Word array)", 
+	"ROOT/fwew-1d/{nav}": "search Word Na'vi -> Local (returns 1-Dimensional Word array)", 
+	"ROOT/fwew-1d/r/{lang}/{local}": "Search Word Local -> Na'vi (returns 1-Dimensional Word array)'", 
+	"ROOT/fwew-simple/{nav}": "Search Na'vi -> Local without checking affixes (returns 2-Dimensional Word array)", 
+	"ROOT/homonyms": "List Na'vi Homonyms", 
+	"ROOT/lenition": "Na'vi Lenition Table", 
+	"ROOT/list": "List all Words (returns 1-Dimensional Word array)", 
+	"ROOT/list/{args}": "List Words with attribute filtering", 
+	"ROOT/list2/{c}/{args}": "List Words with attribute filtering and check-digraphs options", 
+	"ROOT/multi-ipa": "List Words with multiple IPA values (alternative pronunciation)", 
+	"ROOT/multiwordwords": "List Words that have two or more parts separated by a space", 
+	"ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}": "Generate title style name(s)", 
+	"ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}": "Generate Na'vi names in full canonical format", 
+	"ROOT/name/single/{n}/{s}/{dialect}": "Generate single Na'vi names", 
+	"ROOT/number/{word}": "Search a Na'vi number word to see the decimal and octal numeral forms", 
+	"ROOT/number/r/{num}": "Search an integer number between 0 and 32767 to see the Na'vi word and octal numeral forms", 
+	"ROOT/oddballs": "List Words that are canon but contradict Na'vi syllable rules", 
+	"ROOT/phonemedistros": "Get Phoneme Distribution data", 
+	"ROOT/random/{n}": "Get random Words", 
+	"ROOT/random/{n}/{args}": "Get random Words with attribute filtering", 
+	"ROOT/random2/{n}/{c}": "Get random Words with check-digraphs options", 
+	"ROOT/random2/{n}/{c}/{args}": "Get random Words with attribute filtering and check-digraphs options", 
+	"ROOT/reef/{i}": "Get Reef Na'vi syllables and IPA by Forest Na'vi IPA", 
+	"ROOT/search/{lang}/{words}": "Search Na'vi <-> Local", 
+	"ROOT/total-words": "Get the number of Words in the dictionary", 
+	"ROOT/update": "Reload the dictionary cache", 
+	"ROOT/valid/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules", 
+	"ROOT/version": "Version information" 
 }`
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
-	endpointsJSON = strings.ReplaceAll(endpointsJSON, " ", "")
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "\n", "")
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "\t", "")
 	w.Write([]byte(endpointsJSON))
