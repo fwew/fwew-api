@@ -1,7 +1,7 @@
 filippo.io/edwards25519 v1.1.0 h1:FNf4tywRC1HmFuKW5xopWpigGjJKiJSV0Cqo0cJWDaA=
 filippo.io/edwards25519 v1.1.0/go.mod h1:BxyFTGdWcka3PhytdK4V28tE5sGfRvvvRV7EaN4VDT4=
-github.com/fwew/fwew-lib/v5 v5.17.0 h1:eNs6pGB3k0MxtqB+xm+pMUUgma2I778+9uaRygAhnnA=
-github.com/fwew/fwew-lib/v5 v5.17.0/go.mod h1:Rv7tdx/PnhlTJtHDJQAU7PLgr7I1VP3oU8wCqa4LmDI=
+github.com/fwew/fwew-lib/v5 v5.17.1 h1:ydUdSzRbExlvtyNf5D3MehwJSX5th6OIvPTLyT3G2iI=
+github.com/fwew/fwew-lib/v5 v5.17.1/go.mod h1:Rv7tdx/PnhlTJtHDJQAU7PLgr7I1VP3oU8wCqa4LmDI=
 github.com/go-sql-driver/mysql v1.8.1 h1:LedoTUt/eveggdHS9qUFC1EFSa8bU2+1pZjSRpvNJ1Y=
 github.com/go-sql-driver/mysql v1.8.1/go.mod h1:wEBSXgmK//2ZFJyE+qWnIsVGmvmEKlqwuVSjsCm7DZg=
 github.com/gorilla/mux v1.8.1 h1:TuBL49tXwgrFYWhqrNgrUNEY92u81SPhu7sTdzQEiWY=
