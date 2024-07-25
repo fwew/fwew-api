@@ -491,7 +491,7 @@ func getMultiIPA(w http.ResponseWriter, r *http.Request) {
 
 func getDictLen(w http.ResponseWriter, r *http.Request) {
 	a, _ := fwew.GetDictSize()
-	json.NewEncoder(w).Encode("There are " + strconv.Itoa(a) + " words in the dictionary.")
+	json.NewEncoder(w).Encode(a)
 }
 
 func getReefFromIpa(w http.ResponseWriter, r *http.Request) {
