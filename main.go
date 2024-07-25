@@ -82,7 +82,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"ROOT/number/{word}": "Search a Na'vi number word to see the decimal and octal numeral forms", 
 	"ROOT/number/r/{num}": "Search an integer number between 0 and 32767 to see the Na'vi word and octal numeral forms", 
 	"ROOT/oddballs": "List Words that are canon but contradict Na'vi syllable rules", 
-	"ROOT/phonemedistros": "Get Phoneme Distribution data", 
+	"ROOT/phonemedistros/{lang}": "Get Phoneme Distribution data", 
 	"ROOT/random/{n}": "Get random Words", 
 	"ROOT/random/{n}/{args}": "Get random Words with attribute filtering", 
 	"ROOT/random2/{n}/{c}": "Get random Words with check-digraphs options", 
@@ -467,7 +467,9 @@ func getNameAlu(w http.ResponseWriter, r *http.Request) {
 }
 
 func getPhonemeDistros(w http.ResponseWriter, r *http.Request) {
-	a := fwew.GetPhonemeDistrosMap()
+	vars := mux.Vars(r)
+	languageCode := vars["lang"]
+	a := fwew.GetPhonemeDistrosMap(languageCode)
 	json.NewEncoder(w).Encode(a)
 }
 
@@ -541,7 +543,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/number/{word}", searchNumber)
 	myRouter.HandleFunc("/api/number/r/{num}", searchNumberReverse)
 	myRouter.HandleFunc("/api/oddballs", getOddballs)
-	myRouter.HandleFunc("/api/phonemedistros", getPhonemeDistros)
+	myRouter.HandleFunc("/api/phonemedistros/{lang}", getPhonemeDistros)
 	myRouter.HandleFunc("/api/random/{n}", getRandomWords)
 	myRouter.HandleFunc("/api/random/{n}/{args}", getRandomWords)
 	myRouter.HandleFunc("/api/random2/{n}/{c}", getRandomWords2)
