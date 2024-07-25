@@ -89,7 +89,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"ROOT/random2/{n}/{c}/{args}": "Get random Words with attribute filtering and check-digraphs options", 
 	"ROOT/reef/{i}": "Get Reef Na'vi syllables and IPA by Forest Na'vi IPA", 
 	"ROOT/search/{lang}/{words}": "Search Na'vi <-> Local", 
-	"ROOT/total-words": "Get the number of Words in the dictionary", 
+	"ROOT/total-words/{lang}": "Get the number of Words in the dictionary", 
 	"ROOT/update": "Reload the dictionary cache", 
 	"ROOT/valid/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules", 
 	"ROOT/version": "Version information" 
@@ -492,7 +492,10 @@ func getMultiIPA(w http.ResponseWriter, r *http.Request) {
 }
 
 func getDictLen(w http.ResponseWriter, r *http.Request) {
-	a, _ := fwew.GetDictSize()
+	vars := mux.Vars(r)
+	lc := vars["lang"]
+	a, _ := fwew.GetDictSize(lc)
+
 	json.NewEncoder(w).Encode(a)
 }
 
@@ -545,7 +548,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/random2/{n}/{c}/{args}", getRandomWords2)
 	myRouter.HandleFunc("/api/reef/{i}", getReefFromIpa)
 	myRouter.HandleFunc("/api/search/{lang}/{words}", searchBidirectional)
-	myRouter.HandleFunc("/api/total-words", getDictLen)
+	myRouter.HandleFunc("/api/total-words/{lang}", getDictLen)
 	myRouter.HandleFunc("/api/update", update)
 	myRouter.HandleFunc("/api/valid/{i}", getValidity)
 	myRouter.HandleFunc("/api/version", getVersion)
