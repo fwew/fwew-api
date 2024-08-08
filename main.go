@@ -82,6 +82,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"ROOT/number/{word}": "Search a Na'vi number word to see the decimal and octal numeral forms", 
 	"ROOT/number/r/{num}": "Search an integer number between 0 and 32767 to see the Na'vi word and octal numeral forms", 
 	"ROOT/oddballs": "List Words that are canon but contradict Na'vi syllable rules", 
+	"ROOT/phonemedistros": "Get Phoneme Distribution data in English",
 	"ROOT/phonemedistros/{lang}": "Get Phoneme Distribution data", 
 	"ROOT/random/{n}": "Get random Words", 
 	"ROOT/random/{n}/{args}": "Get random Words with attribute filtering", 
@@ -89,9 +90,11 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"ROOT/random2/{n}/{c}/{args}": "Get random Words with attribute filtering and check-digraphs options", 
 	"ROOT/reef/{i}": "Get Reef Na'vi syllables and IPA by Forest Na'vi IPA", 
 	"ROOT/search/{lang}/{words}": "Search Na'vi <-> Local", 
-	"ROOT/total-words/{lang}": "Get the number of Words in the dictionary", 
+	"ROOT/total-words/": "Get the number of Words in the dictionary as a number", 
+	"ROOT/total-words/{lang}": "Get the number of Words in the dictionary as a complete sentence in the specified language", 
 	"ROOT/update": "Reload the dictionary cache", 
-	"ROOT/valid/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules", 
+	"ROOT/valid/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules.  Return results in English.", 
+	"ROOT/valid/{lang}/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules.  Return results in specified language", 
 	"ROOT/version": "Version information" 
 }`
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
@@ -466,6 +469,11 @@ func getNameAlu(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(names)
 }
 
+func getPhonemeDistrosEN(w http.ResponseWriter, r *http.Request) {
+	a := fwew.GetPhonemeDistrosMap("en")
+	json.NewEncoder(w).Encode(a)
+}
+
 func getPhonemeDistros(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	languageCode := vars["lang"]
@@ -493,6 +501,12 @@ func getMultiIPA(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(a)
 }
 
+func getDictLenSimple(w http.ResponseWriter, r *http.Request) {
+	a := fwew.GetDictSizeSimple()
+
+	json.NewEncoder(w).Encode(a)
+}
+
 func getDictLen(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	lc := vars["lang"]
@@ -506,9 +520,15 @@ func getReefFromIpa(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(fwew.ReefMe(vars["i"], false))
 }
 
+func getValidityEN(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	json.NewEncoder(w).Encode(fwew.IsValidNavi(vars["i"], "en"))
+}
+
 func getValidity(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	json.NewEncoder(w).Encode(fwew.IsValidNavi(vars["i"]))
+	lc := vars["lang"]
+	json.NewEncoder(w).Encode(fwew.IsValidNavi(vars["i"], lc))
 }
 
 // set the Header Content-Type to "application/json" for all endpoints
@@ -543,6 +563,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/number/{word}", searchNumber)
 	myRouter.HandleFunc("/api/number/r/{num}", searchNumberReverse)
 	myRouter.HandleFunc("/api/oddballs", getOddballs)
+	myRouter.HandleFunc("/api/phonemedistros", getPhonemeDistrosEN)
 	myRouter.HandleFunc("/api/phonemedistros/{lang}", getPhonemeDistros)
 	myRouter.HandleFunc("/api/random/{n}", getRandomWords)
 	myRouter.HandleFunc("/api/random/{n}/{args}", getRandomWords)
@@ -550,9 +571,11 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/random2/{n}/{c}/{args}", getRandomWords2)
 	myRouter.HandleFunc("/api/reef/{i}", getReefFromIpa)
 	myRouter.HandleFunc("/api/search/{lang}/{words}", searchBidirectional)
+	myRouter.HandleFunc("/api/total-words", getDictLenSimple)
 	myRouter.HandleFunc("/api/total-words/{lang}", getDictLen)
 	myRouter.HandleFunc("/api/update", update)
-	myRouter.HandleFunc("/api/valid/{i}", getValidity)
+	myRouter.HandleFunc("/api/valid/{i}", getValidityEN)
+	myRouter.HandleFunc("/api/valid/{lang}/{i}", getValidity)
 	myRouter.HandleFunc("/api/version", getVersion)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
