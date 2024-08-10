@@ -643,8 +643,8 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/total-words/{lang}", getDictLen)
 	myRouter.HandleFunc("/api/update", update)
 	myRouter.HandleFunc("/api/valid/{i}", getValidityEN)
-	myRouter.HandleFunc("/api/valid/d/{lang}/{i}", getValidityDiscord)
 	myRouter.HandleFunc("/api/valid/{lang}/{i}", getValidity)
+	myRouter.HandleFunc("/api/valid/d/{lang}/{i}", getValidityDiscord)
 	myRouter.HandleFunc("/api/version", getVersion)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
