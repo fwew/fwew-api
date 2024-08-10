@@ -95,8 +95,8 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"ROOT/total-words/{lang}": "Get the number of Words in the dictionary as a complete sentence in the specified language", 
 	"ROOT/update": "Reload the dictionary cache", 
 	"ROOT/valid/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules.  Return results in English.",
+	"ROOT/valid/{lang}/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules.  Return results in specified language",
 	"ROOT/valid/d/{lang}/{i}": "Check if a given word string follows all Na'vi syllable rules.  Return results in specified language under Discord's 2000 character limit.",
-	"ROOT/valid/{lang}/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules.  Return results in specified language", 
 	"ROOT/version": "Version information" 
 }`
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
