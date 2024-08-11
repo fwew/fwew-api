@@ -77,7 +77,8 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"ROOT/multi-ipa": "List Words with multiple IPA values (alternative pronunciation)", 
 	"ROOT/multiwordwords": "List Words that have two or more parts separated by a space", 
 	"ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}": "Generate title style name(s)", 
-	"ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}": "Generate Na'vi names in full canonical format", 
+	"ROOT/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}": "Generate Na'vi names in full canonical format",
+	"ROOT/name/full/d/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}": "Generate Na'vi names in full canonical format.  Stop before Discord's 2000 character limit",
 	"ROOT/name/single/{n}/{s}/{dialect}": "Generate single Na'vi names", 
 	"ROOT/number/{word}": "Search a Na'vi number word to see the decimal and octal numeral forms", 
 	"ROOT/number/r/{num}": "Search an integer number between 0 and 32767 to see the Na'vi word and octal numeral forms", 
@@ -93,8 +94,9 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"ROOT/total-words/": "Get the number of Words in the dictionary as a number", 
 	"ROOT/total-words/{lang}": "Get the number of Words in the dictionary as a complete sentence in the specified language", 
 	"ROOT/update": "Reload the dictionary cache", 
-	"ROOT/valid/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules.  Return results in English.", 
-	"ROOT/valid/{lang}/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules.  Return results in specified language", 
+	"ROOT/valid/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules.  Return results in English.",
+	"ROOT/valid/{lang}/{i}": "Check if a given word string (e.g., name, loan word, etc.) follows all Na'vi syllable rules.  Return results in specified language",
+	"ROOT/valid/d/{lang}/{i}": "Check if a given word string follows all Na'vi syllable rules.  Return results in specified language under Discord's 2000 character limit.",
 	"ROOT/version": "Version information" 
 }`
 	endpointsJSON = strings.ReplaceAll(endpointsJSON, "ROOT", config.WebRoot)
@@ -103,6 +105,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(endpointsJSON))
 }
 
+// Search Na'vi words and return results in natural languages
 func searchWord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	navi := vars["nav"]
@@ -119,6 +122,7 @@ func searchWord(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(words)
 }
 
+// Search natural language words and return Na'vi words
 func searchWordReverse(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	languageCode := vars["lang"]
@@ -136,6 +140,7 @@ func searchWordReverse(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(words)
 }
 
+// Old endpoint: return a 1d array of words instead of the normal 2d array
 func searchWord1d(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	navi := vars["nav"]
@@ -157,6 +162,7 @@ func searchWord1d(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(oneDWords)
 }
 
+// Old endpoint: return a 1d array of words instead of the normal 2d array
 func searchWordReverse1d(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	languageCode := vars["lang"]
@@ -179,7 +185,7 @@ func searchWordReverse1d(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(oneDWords)
 }
 
-/* Used with /profanity to make it run faster */
+// Search words without checking for productive derivations
 func simpleSearchWord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	navi := vars["nav"]
@@ -196,6 +202,7 @@ func simpleSearchWord(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(words)
 }
 
+// Input Na'vi or natural language words for searching
 func searchBidirectional(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	languageCode := vars["lang"]
@@ -214,6 +221,7 @@ func searchBidirectional(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(words)
 }
 
+// List all words with specified parameters
 func listWords(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	args := strings.Split(vars["args"], " ")
@@ -230,6 +238,7 @@ func listWords(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(words)
 }
 
+// Same as above but with extra options for digraph detection
 func listWords2(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	args := strings.Split(vars["args"], " ")
@@ -253,6 +262,7 @@ func listWords2(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(words)
 }
 
+// Return a list of random words without specified parameters
 func getRandomWords(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	n, err := strconv.Atoi(vars["n"])
@@ -274,6 +284,7 @@ func getRandomWords(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(words)
 }
 
+// Return a list of random words with specified parameters
 func getRandomWords2(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	n, err := strconv.Atoi(vars["n"])
@@ -302,6 +313,7 @@ func getRandomWords2(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(words)
 }
 
+// Turn Arabic numerals into a Na'vi number
 func searchNumber(w http.ResponseWriter, r *http.Request) {
 	var n number
 	vars := mux.Vars(r)
@@ -320,6 +332,7 @@ func searchNumber(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(n)
 }
 
+// Turn a Na'vi number into Arabic numerals
 func searchNumberReverse(w http.ResponseWriter, r *http.Request) {
 	var n number
 	vars := mux.Vars(r)
@@ -346,11 +359,13 @@ func searchNumberReverse(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(n)
 }
 
+// Return the lenition patterns in Na'vi language
 func getLenitionTable(w http.ResponseWriter, r *http.Request) {
 	lenitionTableJSON := `{"kx":"k","px":"p","tx":"t","k":"h","p":"f","t":"s","ts":"s","'":"(disappears, except before ll or rr)"}`
 	w.Write([]byte(lenitionTableJSON))
 }
 
+// Version of fwew-api
 func getVersion(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(version)
 }
@@ -372,6 +387,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Return one-word Na'vi names (or new root words) with or without specified parameters
 func getSingleNames(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	n, err1 := strconv.Atoi(vars["n"])
@@ -394,7 +410,36 @@ func getSingleNames(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(names)
 }
 
+// Return Na'vi names of the full canonical Na'vi name format (with or without specified parameters)
 func getFullNames(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	ending := vars["ending"]
+	n, err1 := strconv.Atoi(vars["n"])
+	s1, err2 := strconv.Atoi(vars["s1"])
+	s2, err3 := strconv.Atoi(vars["s2"])
+	s3, err4 := strconv.Atoi(vars["s3"])
+	dialect := vars["dialect"]
+	d := 0
+
+	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
+		json.NewEncoder(w).Encode(fwew.Text("invalidDecimalError"))
+		return
+	}
+
+	if dialect == "forest" {
+		d = 1
+	} else if dialect == "reef" {
+		d = 2
+	}
+
+	names := fwew.FullNames(ending, n, d, [3]int{s1, s2, s3}, false)
+	json.NewEncoder(w).Encode(names)
+}
+
+// Same as above but stop before Discord's 2000 character limit
+// None of the other name formats will exceed 2000 characters because
+// the 50 name limit makes it extremely unlikely if not impossible
+func getFullNamesDiscord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	ending := vars["ending"]
 	n, err1 := strconv.Atoi(vars["n"])
@@ -419,6 +464,7 @@ func getFullNames(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(names)
 }
 
+// Return names of the format "[name] alu [noun] [adjective]"" with or without specified parameters
 func getNameAlu(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	n, err1 := strconv.Atoi(vars["n"])
@@ -469,11 +515,13 @@ func getNameAlu(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(names)
 }
 
+// Return the phoneme distributions in English
 func getPhonemeDistrosEN(w http.ResponseWriter, r *http.Request) {
 	a := fwew.GetPhonemeDistrosMap("en")
 	json.NewEncoder(w).Encode(a)
 }
 
+// Return the phoneme distributions in the specified language
 func getPhonemeDistros(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	languageCode := vars["lang"]
@@ -481,32 +529,38 @@ func getPhonemeDistros(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(a)
 }
 
+// Get all words with spaces
 func getMultiwordWords(w http.ResponseWriter, r *http.Request) {
 	a := fwew.GetMultiwordWords()
 	json.NewEncoder(w).Encode(a)
 }
 
+// Get all words with multiple dictionary entries for one spelling
 func getHomonyms(w http.ResponseWriter, r *http.Request) {
 	a, _ := fwew.GetHomonyms()
 	json.NewEncoder(w).Encode(a)
 }
 
+// Get all words which seemingly violate Na'vi phonotactic rules
 func getOddballs(w http.ResponseWriter, r *http.Request) {
 	a, _ := fwew.GetOddballs()
 	json.NewEncoder(w).Encode(a)
 }
 
+// Get all words with more than one pronunciation listed
 func getMultiIPA(w http.ResponseWriter, r *http.Request) {
 	a, _ := fwew.GetMultiIPA()
 	json.NewEncoder(w).Encode(a)
 }
 
+// Get the number of words in the dictionary
 func getDictLenSimple(w http.ResponseWriter, r *http.Request) {
 	a := fwew.GetDictSizeSimple()
 
 	json.NewEncoder(w).Encode(a)
 }
 
+// Get the number of words in the dictionary as a complete sentence in the specified language
 func getDictLen(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	lc := vars["lang"]
@@ -515,20 +569,33 @@ func getDictLen(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(a)
 }
 
+// Turn an interdialect IPA into a reef IPA and Romanization
 func getReefFromIpa(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	json.NewEncoder(w).Encode(fwew.ReefMe(vars["i"], false))
 }
 
+// Say whether or not a word follows Na'vi syllable rules.
+// Return results in English
 func getValidityEN(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	json.NewEncoder(w).Encode(fwew.IsValidNavi(vars["i"], "en"))
+	json.NewEncoder(w).Encode(fwew.IsValidNavi(vars["i"], "en", false))
 }
 
+// Say whether or not a word follows Na'vi syllable rules.
+// Return results in the specified language and don't exceed 2000 characters
+func getValidityDiscord(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	lc := vars["lang"]
+	json.NewEncoder(w).Encode(fwew.IsValidNavi(vars["i"], lc, true))
+}
+
+// Say whether or not a word follows Na'vi syllable rules.
+// Return results in the specified language
 func getValidity(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	lc := vars["lang"]
-	json.NewEncoder(w).Encode(fwew.IsValidNavi(vars["i"], lc))
+	json.NewEncoder(w).Encode(fwew.IsValidNavi(vars["i"], lc, false))
 }
 
 // set the Header Content-Type to "application/json" for all endpoints
@@ -559,6 +626,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/multiwordwords", getMultiwordWords)
 	myRouter.HandleFunc("/api/name/alu/{n}/{s}/{nm}/{am}/{dialect}", getNameAlu)
 	myRouter.HandleFunc("/api/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}", getFullNames)
+	myRouter.HandleFunc("/api/name/full/d/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}", getFullNamesDiscord)
 	myRouter.HandleFunc("/api/name/single/{n}/{s}/{dialect}", getSingleNames)
 	myRouter.HandleFunc("/api/number/{word}", searchNumber)
 	myRouter.HandleFunc("/api/number/r/{num}", searchNumberReverse)
@@ -576,6 +644,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/update", update)
 	myRouter.HandleFunc("/api/valid/{i}", getValidityEN)
 	myRouter.HandleFunc("/api/valid/{lang}/{i}", getValidity)
+	myRouter.HandleFunc("/api/valid/d/{lang}/{i}", getValidityDiscord)
 	myRouter.HandleFunc("/api/version", getVersion)
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, myRouter))
