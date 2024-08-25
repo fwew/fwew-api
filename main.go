@@ -18,7 +18,7 @@ var config Config
 
 // global configured instance of Version
 var version = Version{
-	APIVersion:  "1.6.0",
+	APIVersion:  "1.6.1",
 	FwewVersion: fmt.Sprintf("%d.%d.%d", fwew.Version.Major, fwew.Version.Minor, fwew.Version.Patch),
 	DictBuild:   fwew.Version.DictBuild,
 }
@@ -652,6 +652,6 @@ func handleRequests() {
 
 func main() {
 	loadConfig()
-	fwew.StartEverything()
+	log.Print(fwew.StartEverything())
 	handleRequests()
 }
