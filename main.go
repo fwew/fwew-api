@@ -227,10 +227,6 @@ func listWords(w http.ResponseWriter, r *http.Request) {
 	uncommadArgs := strings.ReplaceAll(vars["args"], ", ", ",")
 	args := strings.Split(uncommadArgs, " ")
 
-	for i := 0; i < len(args); i++ {
-		args[i] = strings.ReplaceAll(args[i], ",", ", ")
-	}
-
 	words, err := fwew.List(args, uint8(1))
 	if err != nil || len(words) == 0 {
 		var m message
@@ -246,7 +242,9 @@ func listWords(w http.ResponseWriter, r *http.Request) {
 // Same as above but with extra options for digraph detection
 func listWords2(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	args := strings.Split(vars["args"], " ")
+	uncommadArgs := strings.ReplaceAll(vars["args"], ", ", ",")
+	args := strings.Split(uncommadArgs, " ")
+
 	c := strings.Split(vars["c"], " ")
 	checkDigraphs := uint8(1)
 	if c[0] == "maybe" {
