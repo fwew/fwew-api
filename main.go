@@ -224,7 +224,8 @@ func searchBidirectional(w http.ResponseWriter, r *http.Request) {
 // List all words with specified parameters
 func listWords(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	args := strings.Split(vars["args"], " ")
+	uncommadArgs := strings.ReplaceAll(vars["args"], ", ", ",")
+	args := strings.Split(uncommadArgs, " ")
 
 	words, err := fwew.List(args, uint8(1))
 	if err != nil || len(words) == 0 {
@@ -653,4 +654,5 @@ func handleRequests() {
 func main() {
 	loadConfig()
 	log.Print(fwew.StartEverything())
+	handleRequests()
 }
