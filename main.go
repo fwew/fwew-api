@@ -653,5 +653,4 @@ func handleRequests() {
 func main() {
 	loadConfig()
 	log.Print(fwew.StartEverything())
-	handleRequests()
 }
