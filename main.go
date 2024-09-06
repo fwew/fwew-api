@@ -227,6 +227,10 @@ func listWords(w http.ResponseWriter, r *http.Request) {
 	uncommadArgs := strings.ReplaceAll(vars["args"], ", ", ",")
 	args := strings.Split(uncommadArgs, " ")
 
+	for i := 0; i < len(args); i++ {
+		args[i] = strings.ReplaceAll(args[i], ",", ", ")
+	}
+
 	words, err := fwew.List(args, uint8(1))
 	if err != nil || len(words) == 0 {
 		var m message
