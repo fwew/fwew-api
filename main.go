@@ -654,7 +654,32 @@ func handleRequests() {
 }
 
 func main() {
-	loadConfig()
+	/*min := 3
+	max := 500
+	n := min
+	for n <= max {
+		result := 0
+		i := 1
+		// Infix triplets
+		for i <= n-2 {
+			result += i * (n - i - 1)
+			i++
+		}
+		// Infix duos
+		i = 1
+		for i <= n-1 {
+			result += (n - i)
+			i++
+		}
+		// Single infixes plus no infixes
+		result += n + 1
+		fmt.Println(strconv.Itoa(n) + " " + strconv.Itoa(result)) // + " " + strconv.Itoa(int(math.Pow(2, float64(n)))))
+		n++
+	}*/
+
+	//fwew.homonymSearch()
+
+	//loadConfig()
 	log.Print(fwew.StartEverything())
-	handleRequests()
+	//handleRequests()*/
 }
