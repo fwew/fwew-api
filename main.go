@@ -677,9 +677,7 @@ func main() {
 		n++
 	}*/
 
-	//fwew.homonymSearch()
-
-	//loadConfig()
+	loadConfig()
 	log.Print(fwew.StartEverything())
-	//handleRequests()*/
+	handleRequests()
 }
