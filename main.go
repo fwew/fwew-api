@@ -677,7 +677,7 @@ func main() {
 		n++
 	}*/
 
-	loadConfig()
+	//loadConfig()
 	log.Print(fwew.StartEverything())
-	handleRequests()
+	//handleRequests()
 }
