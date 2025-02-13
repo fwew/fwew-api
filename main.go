@@ -65,10 +65,12 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	var endpointsJSON = `{ 
 	"ROOT/": "Fwew API Index", 
 	"ROOT/fwew/{nav}": "Search Word Na'vi -> Local (returns 2-Dimensional Word array)", 
+	"ROOT/fwew-strict/{nav}": "Search Word Na'vi -> Local (returns 2-Dimensional Word array)", 
 	"ROOT/fwew/r/{lang}/{local}": "Search Word Local -> Na'vi (returns 2-Dimensional Word array)", 
 	"ROOT/fwew-1d/{nav}": "search Word Na'vi -> Local (returns 1-Dimensional Word array)", 
 	"ROOT/fwew-1d/r/{lang}/{local}": "Search Word Local -> Na'vi (returns 1-Dimensional Word array)'", 
 	"ROOT/fwew-simple/{nav}": "Search Na'vi -> Local without checking affixes (returns 2-Dimensional Word array)", 
+	"ROOT/fwew-simple-strict/{nav}": "Search Na'vi -> Local without checking affixes (returns 2-Dimensional Word array)", 
 	"ROOT/homonyms": "List Na'vi Homonyms", 
 	"ROOT/lenition": "Na'vi Lenition Table", 
 	"ROOT/list": "List all Words (returns 1-Dimensional Word array)", 
@@ -110,7 +112,24 @@ func searchWord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	navi := vars["nav"]
 
-	words, err := fwew.TranslateFromNaviHash(navi, true)
+	words, err := fwew.TranslateFromNaviHash(navi, true, false)
+	if err != nil || len(words) == 0 {
+		var m message
+		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	json.NewEncoder(w).Encode(words)
+}
+
+// Search Na'vi words and return results in natural languages
+func searchWordStrict(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	navi := vars["nav"]
+
+	words, err := fwew.TranslateFromNaviHash(navi, true, true)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -145,7 +164,7 @@ func searchWord1d(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	navi := vars["nav"]
 
-	words, err := fwew.TranslateFromNaviHash(navi, true)
+	words, err := fwew.TranslateFromNaviHash(navi, true, false)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -190,7 +209,24 @@ func simpleSearchWord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	navi := vars["nav"]
 
-	words, err := fwew.TranslateFromNaviHash(navi, false)
+	words, err := fwew.TranslateFromNaviHash(navi, false, false)
+	if err != nil || len(words) == 0 {
+		var m message
+		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	json.NewEncoder(w).Encode(words)
+}
+
+// Search words without checking for productive derivations
+func simpleStrictSearchWord(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	navi := vars["nav"]
+
+	words, err := fwew.TranslateFromNaviHash(navi, false, true)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -616,10 +652,12 @@ func handleRequests() {
 
 	myRouter.HandleFunc("/api/", getEndpoints)
 	myRouter.HandleFunc("/api/fwew/{nav}", searchWord)
+	myRouter.HandleFunc("/api/fwew-strict/{nav}", searchWordStrict)
 	myRouter.HandleFunc("/api/fwew/r/{lang}/{local}", searchWordReverse)
 	myRouter.HandleFunc("/api/fwew-1d/{nav}", searchWord1d)
 	myRouter.HandleFunc("/api/fwew-1d/r/{lang}/{local}", searchWordReverse1d)
 	myRouter.HandleFunc("/api/fwew-simple/{nav}", simpleSearchWord)
+	myRouter.HandleFunc("/api/fwew-simple-strict/{nav}", simpleStrictSearchWord)
 	myRouter.HandleFunc("/api/homonyms", getHomonyms)
 	myRouter.HandleFunc("/api/lenition", getLenitionTable)
 	myRouter.HandleFunc("/api/list", listWords)
