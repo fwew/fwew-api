@@ -65,6 +65,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	var endpointsJSON = `{ 
 	"ROOT/": "Fwew API Index", 
 	"ROOT/fwew/{nav}": "Search Word Na'vi -> Local (returns 2-Dimensional Word array)", 
+	"ROOT/fwew-reef/{nav}": "Search Word Reef Na'vi -> Local (returns 2-Dimensional Word array)",
 	"ROOT/fwew-strict/{nav}": "Search Word Na'vi -> Local (returns 2-Dimensional Word array)", 
 	"ROOT/fwew/r/{lang}/{local}": "Search Word Local -> Na'vi (returns 2-Dimensional Word array)", 
 	"ROOT/fwew-1d/{nav}": "search Word Na'vi -> Local (returns 1-Dimensional Word array)", 
@@ -93,6 +94,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"ROOT/random2/{n}/{c}/{args}": "Get random Words with attribute filtering and check-digraphs options", 
 	"ROOT/reef/{i}": "Get Reef Na'vi syllables and IPA by Forest Na'vi IPA", 
 	"ROOT/search/{lang}/{words}": "Search Na'vi <-> Local", 
+	"ROOT/search-reef/{lang}/{words}": "Search Na'vi <-> Local", 
 	"ROOT/total-words/": "Get the number of Words in the dictionary as a number", 
 	"ROOT/total-words/{lang}": "Get the number of Words in the dictionary as a complete sentence in the specified language", 
 	"ROOT/update": "Reload the dictionary cache", 
@@ -113,6 +115,23 @@ func searchWord(w http.ResponseWriter, r *http.Request) {
 	navi := vars["nav"]
 
 	words, err := fwew.TranslateFromNaviHash(navi, true, false, false)
+	if err != nil || len(words) == 0 {
+		var m message
+		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	json.NewEncoder(w).Encode(words)
+}
+
+// Search Na'vi words and return results in natural languages
+func searchWordReef(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	navi := vars["nav"]
+
+	words, err := fwew.TranslateFromNaviHash(navi, true, false, true)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -240,6 +259,25 @@ func simpleStrictSearchWord(w http.ResponseWriter, r *http.Request) {
 
 // Input Na'vi or natural language words for searching
 func searchBidirectional(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	languageCode := vars["lang"]
+	inputWords := vars["words"]
+
+	words, err := fwew.BidirectionalSearch(inputWords, true, languageCode, false)
+	if err != nil || len(words) == 0 {
+
+		var m message
+		m.Message = "no results"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(m)
+		return
+	}
+
+	json.NewEncoder(w).Encode(words)
+}
+
+// Input Na'vi or natural language words for searching
+func searchBidirectionalReef(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	languageCode := vars["lang"]
 	inputWords := vars["words"]
@@ -652,6 +690,7 @@ func handleRequests() {
 
 	myRouter.HandleFunc("/api/", getEndpoints)
 	myRouter.HandleFunc("/api/fwew/{nav}", searchWord)
+	myRouter.HandleFunc("/api/fwew-reef/{nav}", searchWordReef)
 	myRouter.HandleFunc("/api/fwew-strict/{nav}", searchWordStrict)
 	myRouter.HandleFunc("/api/fwew/r/{lang}/{local}", searchWordReverse)
 	myRouter.HandleFunc("/api/fwew-1d/{nav}", searchWord1d)
@@ -680,6 +719,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/random2/{n}/{c}/{args}", getRandomWords2)
 	myRouter.HandleFunc("/api/reef/{i}", getReefFromIpa)
 	myRouter.HandleFunc("/api/search/{lang}/{words}", searchBidirectional)
+	myRouter.HandleFunc("/api/search-reef/{lang}/{words}", searchBidirectionalReef)
 	myRouter.HandleFunc("/api/total-words", getDictLenSimple)
 	myRouter.HandleFunc("/api/total-words/{lang}", getDictLen)
 	myRouter.HandleFunc("/api/update", update)
