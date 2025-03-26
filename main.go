@@ -65,13 +65,12 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	var endpointsJSON = `{ 
 	"ROOT/": "Fwew API Index", 
 	"ROOT/fwew/{nav}": "Search Word Na'vi -> Local (returns 2-Dimensional Word array)", 
-	"ROOT/fwew-reef/{nav}": "Search Word Reef Na'vi -> Local (returns 2-Dimensional Word array)",
+	"ROOT/fwew-reef/{strict}/{nav}": "Search Word Reef Na'vi -> Local (returns 2-Dimensional Word array)",
 	"ROOT/fwew-strict/{nav}": "Search Word Na'vi -> Local (returns 2-Dimensional Word array)", 
 	"ROOT/fwew/r/{lang}/{local}": "Search Word Local -> Na'vi (returns 2-Dimensional Word array)", 
 	"ROOT/fwew-1d/{nav}": "search Word Na'vi -> Local (returns 1-Dimensional Word array)", 
 	"ROOT/fwew-1d/r/{lang}/{local}": "Search Word Local -> Na'vi (returns 1-Dimensional Word array)'", 
-	"ROOT/fwew-simple/{nav}": "Search Na'vi -> Local without checking affixes (returns 2-Dimensional Word array)", 
-	"ROOT/fwew-simple-strict/{nav}": "Search Na'vi -> Local without checking affixes (returns 2-Dimensional Word array)", 
+	"ROOT/fwew-simple/{strict}/{nav}": "Search Na'vi -> Local without checking affixes (returns 2-Dimensional Word array)", 
 	"ROOT/homonyms": "List Na'vi Homonyms", 
 	"ROOT/lenition": "Na'vi Lenition Table", 
 	"ROOT/list": "List all Words (returns 1-Dimensional Word array)", 
@@ -130,8 +129,13 @@ func searchWord(w http.ResponseWriter, r *http.Request) {
 func searchWordReef(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	navi := vars["nav"]
+	strictString := vars["strict"]
+	strict := false
+	if strings.ToLower(strictString) == "true" {
+		strict = true
+	}
 
-	words, err := fwew.TranslateFromNaviHash(navi, true, false, true)
+	words, err := fwew.TranslateFromNaviHash(navi, true, strict, true)
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -690,13 +694,12 @@ func handleRequests() {
 
 	myRouter.HandleFunc("/api/", getEndpoints)
 	myRouter.HandleFunc("/api/fwew/{nav}", searchWord)
-	myRouter.HandleFunc("/api/fwew-reef/{nav}", searchWordReef)
+	myRouter.HandleFunc("/api/fwew-reef/{strict}/{nav}", searchWordReef)
 	myRouter.HandleFunc("/api/fwew-strict/{nav}", searchWordStrict)
 	myRouter.HandleFunc("/api/fwew/r/{lang}/{local}", searchWordReverse)
 	myRouter.HandleFunc("/api/fwew-1d/{nav}", searchWord1d)
 	myRouter.HandleFunc("/api/fwew-1d/r/{lang}/{local}", searchWordReverse1d)
-	myRouter.HandleFunc("/api/fwew-simple/{nav}", simpleSearchWord)
-	myRouter.HandleFunc("/api/fwew-simple-strict/{nav}", simpleStrictSearchWord)
+	myRouter.HandleFunc("/api/fwew-simple/{strict}/{nav}", simpleSearchWord)
 	myRouter.HandleFunc("/api/homonyms", getHomonyms)
 	myRouter.HandleFunc("/api/lenition", getLenitionTable)
 	myRouter.HandleFunc("/api/list", listWords)
