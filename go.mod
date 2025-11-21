@@ -5,7 +5,7 @@ go 1.22
 toolchain go1.22.4
 
 require (
-	github.com/fwew/fwew-lib/v5 v5.25.3
+	github.com/fwew/fwew-lib/v5 v5.25.4
 	github.com/gorilla/mux v1.8.1
 )
 
