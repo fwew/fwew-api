@@ -1,0 +1,4 @@
+# only include source file and module files
+!go.mod
+!go.sum
+!main.go
