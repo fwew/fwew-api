@@ -307,9 +307,12 @@ func listWords(w http.ResponseWriter, r *http.Request) {
 	args := strings.Split(uncommadArgs, " ")
 
 	words, err := fwew.List(args, uint8(1))
-	sort.SliceStable(words, func(i, j int) bool {
-		return fwew.AlphabetizeHelper(words[i].Navi, words[j].Navi)
-	})
+	if !(strings.Contains(uncommadArgs, "words first") || strings.Contains(uncommadArgs, "words last")) {
+		sort.SliceStable(words, func(i, j int) bool {
+			return fwew.AlphabetizeHelper(words[i].Navi, words[j].Navi)
+		})
+	}
+
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
