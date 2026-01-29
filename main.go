@@ -77,6 +77,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"ROOT/list": "List all Words (returns 1-Dimensional Word array)", 
 	"ROOT/list/{args}": "List Words with attribute filtering", 
 	"ROOT/list2/{c}/{args}": "List Words with attribute filtering and check-digraphs options", 
+	"ROOT/api/list-help/{lang}": "Show all the commands that can be put into list or random"
 	"ROOT/multi-ipa": "List Words with multiple IPA values (alternative pronunciation)", 
 	"ROOT/multiwordwords": "List Words that have two or more parts separated by a space", 
 	"ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}": "Generate title style name(s)", 
@@ -339,9 +340,11 @@ func listWords2(w http.ResponseWriter, r *http.Request) {
 	}
 
 	words, err := fwew.List(args, checkDigraphs)
-	sort.SliceStable(words, func(i, j int) bool {
-		return fwew.AlphabetizeHelper(words[i].Navi, words[j].Navi)
-	})
+	if !(strings.Contains(uncommadArgs, "words first") || strings.Contains(uncommadArgs, "words last")) {
+		sort.SliceStable(words, func(i, j int) bool {
+			return fwew.AlphabetizeHelper(words[i].Navi, words[j].Navi)
+		})
+	}
 	if err != nil || len(words) == 0 {
 		var m message
 		m.Message = "no results"
@@ -351,6 +354,15 @@ func listWords2(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(words)
+}
+
+// Get the commands for list and random in the specified language
+func listWordsHelp(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	lc := vars["lang"]
+	a, _ := fwew.ListHelp(lc)
+
+	json.NewEncoder(w).Encode(a)
 }
 
 // Return a list of random words without specified parameters
@@ -715,6 +727,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/list", listWords)
 	myRouter.HandleFunc("/api/list/{args}", listWords)
 	myRouter.HandleFunc("/api/list2/{c}/{args}", listWords2)
+	myRouter.HandleFunc("/api/list-help/{lang}", listWordsHelp)
 	myRouter.HandleFunc("/api/multi-ipa", getMultiIPA)
 	myRouter.HandleFunc("/api/multiwordwords", getMultiwordWords)
 	myRouter.HandleFunc("/api/name/alu/{n}/{s}/{nm}/{am}/{dialect}", getNameAlu)
