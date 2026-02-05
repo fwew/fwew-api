@@ -19,7 +19,7 @@ var config Config
 
 // global configured instance of Version
 var version = Version{
-	APIVersion:  "1.6.2",
+	APIVersion:  "1.7.0",
 	FwewVersion: fmt.Sprintf("%d.%d.%d", fwew.Version.Major, fwew.Version.Minor, fwew.Version.Patch),
 	DictBuild:   fwew.Version.DictBuild,
 }
