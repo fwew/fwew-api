@@ -77,7 +77,7 @@ func getEndpoints(w http.ResponseWriter, r *http.Request) {
 	"ROOT/list": "List all Words (returns 1-Dimensional Word array)", 
 	"ROOT/list/{args}": "List Words with attribute filtering", 
 	"ROOT/list2/{c}/{args}": "List Words with attribute filtering and check-digraphs options", 
-	"ROOT/api/list-help/{lang}": "Show all the commands that can be put into list or random"
+	"ROOT/api/list-help/{lang}": "Show all the commands that can be put into list or random",
 	"ROOT/multi-ipa": "List Words with multiple IPA values (alternative pronunciation)", 
 	"ROOT/multiwordwords": "List Words that have two or more parts separated by a space", 
 	"ROOT/name/alu/{n}/{s}/{nm}/{am}/{dialect}": "Generate title style name(s)", 
