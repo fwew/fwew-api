@@ -3,3 +3,4 @@ services:
     build: .
     ports:
       - 10000:10000
+    restart: always
