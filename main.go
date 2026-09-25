@@ -24,6 +24,16 @@ var version = Version{
 	DictBuild:   fwew.Version.DictBuild,
 }
 
+var digraphMap = map[string]uint8{
+	"maybe": 0,
+	"false": 2,
+}
+
+var dialectMap = map[string]int{
+	"forest": 1,
+	"reef":   2,
+}
+
 // Config contains variables to be configured in the config.json file
 type Config struct {
 	Port    string `json:"Port"`
@@ -246,23 +256,6 @@ func simpleSearchWord(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(words)
 }
 
-// Search words without checking for productive derivations
-func simpleStrictSearchWord(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	navi := vars["nav"]
-
-	words, err := fwew.TranslateFromNaviHash(navi, false, true, false)
-	if err != nil || len(words) == 0 {
-		var m message
-		m.Message = "no results"
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(m)
-		return
-	}
-
-	json.NewEncoder(w).Encode(words)
-}
-
 // Input Na'vi or natural language words for searching
 func searchBidirectional(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -333,10 +326,9 @@ func listWords2(w http.ResponseWriter, r *http.Request) {
 
 	c := strings.Split(vars["c"], " ")
 	checkDigraphs := uint8(1)
-	if c[0] == "maybe" {
-		checkDigraphs = 0
-	} else if c[0] == "false" {
-		checkDigraphs = 2
+
+	if digraphPick, ok := digraphMap[c[0]]; ok {
+		checkDigraphs = digraphPick
 	}
 
 	words, err := fwew.List(args, checkDigraphs)
@@ -393,10 +385,8 @@ func getRandomWords2(w http.ResponseWriter, r *http.Request) {
 	n, err := strconv.Atoi(vars["n"])
 	c := strings.Split(vars["c"], " ")
 	checkDigraphs := uint8(1)
-	if c[0] == "maybe" {
-		checkDigraphs = 0
-	} else if c[0] == "false" {
-		checkDigraphs = 2
+	if digraphPick, ok := digraphMap[c[0]]; ok {
+		checkDigraphs = digraphPick
 	}
 	if err != nil {
 		json.NewEncoder(w).Encode(fwew.Text("invalidDecimalError"))
@@ -503,10 +493,8 @@ func getSingleNames(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if dialect == "forest" {
-		d = 1
-	} else if dialect == "reef" {
-		d = 2
+	if dialectPick, ok := dialectMap[dialect]; ok {
+		d = dialectPick
 	}
 
 	names := fwew.SingleNames(n, d, s)
@@ -529,10 +517,8 @@ func getFullNames(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if dialect == "forest" {
-		d = 1
-	} else if dialect == "reef" {
-		d = 2
+	if dialectPick, ok := dialectMap[dialect]; ok {
+		d = dialectPick
 	}
 
 	names := fwew.FullNames(ending, n, d, [3]int{s1, s2, s3}, false)
@@ -557,10 +543,8 @@ func getFullNamesDiscord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if dialect == "forest" {
-		d = 1
-	} else if dialect == "reef" {
-		d = 2
+	if dialectPick, ok := dialectMap[dialect]; ok {
+		d = dialectPick
 	}
 
 	names := fwew.FullNames(ending, n, d, [3]int{s1, s2, s3}, true)
@@ -582,35 +566,35 @@ func getNameAlu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if dialect == "forest" {
-		d = 1
-	} else if dialect == "reef" {
-		d = 2
+	if dialectPick, ok := dialectMap[dialect]; ok {
+		d = dialectPick
 	}
 
 	nm := 0
-	if noun_mode == "normal noun" {
+	switch noun_mode {
+	case "normal noun":
 		nm = 1
-	} else if noun_mode == "verb-er" {
+	case "verb-er":
 		nm = 2
 	}
 
 	am := 0
-	if adj_mode == "none" {
+	switch adj_mode {
+	case "none":
 		am = 1
-	} else if adj_mode == "any" {
+	case "any":
 		am = -1
-	} else if adj_mode == "normal adjective" {
+	case "normal adjective":
 		am = 2
-	} else if adj_mode == "genitive noun" {
+	case "genitive noun":
 		am = 3
-	} else if adj_mode == "origin noun" {
+	case "origin noun":
 		am = 4
-	} else if adj_mode == "participle verb" {
+	case "participle verb":
 		am = 5
-	} else if adj_mode == "active participle verb" {
+	case "active participle verb":
 		am = 6
-	} else if adj_mode == "passive participle verb" {
+	case "passive participle verb":
 		am = 7
 	}
 
